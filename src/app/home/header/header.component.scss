@@ -1,0 +1,27 @@
+.toolbarContainer, .menuContainer{
+    display: flex;
+}
+
+.menuContainer{
+    justify-content: space-between;
+}
+
+.marginLeft-10{
+    margin-left: 10px;
+}
+
+.icon {
+    padding: 0 14px;
+  }
+  
+.spacer {
+    flex: 1 1 auto;
+}
+
+a{
+    color: white;
+}
+
+.userName{
+    display: flex;
+}

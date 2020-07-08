@@ -1,0 +1,33 @@
+<mat-toolbar color="primary">
+    <span>
+    <a mat-button routerLink="/">Hollywood Bet Tester</a>
+    </span>
+    <span class="spacer"></span>
+    <div class="menuContainer">
+        <span>
+            <a mat-button routerLink="/tournament">Tournanemts</a>
+        </span>
+        <span class="marginLeft-10">
+            <a mat-button routerLink="/events">Events</a>
+        </span>
+        <span class="marginLeft-10">
+            <a mat-button routerLink="/horses">Horses</a>
+        </span>
+    </div>
+    <span class="spacer"></span>
+    <div class="userName" *ngIf="isAuthenticated else notAuthenticated">
+        <div>Hello {{name}}</div>
+        <button mat-button (click)="logOut()">Sign Out</button>
+    </div>
+    <ng-template #notAuthenticated>
+        <button mat-button (click)="logIn()">Log In</button>
+        <button mat-button  routerLink="/register">Register</button>
+    </ng-template>
+   
+    
+    <!-- <mat-icon class="icon">favorite</mat-icon> -->
+</mat-toolbar>
+
+
+
+

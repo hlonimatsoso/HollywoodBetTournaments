@@ -1,11 +1,17 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
+import { HomeRoutingModule } from './home/home-routing.module';
+
 import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {HomeModule} from './home/home.module'
+import {CoreModule} from './core/core.module'
+
 import { importType } from '@angular/compiler/src/output/output_ast';
-import {MatButtonModule} from '@angular/material/button'
+
+
 
 @NgModule({
   declarations: [
@@ -15,7 +21,9 @@ import {MatButtonModule} from '@angular/material/button'
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    MatButtonModule
+    CoreModule,
+    HomeRoutingModule,
+    HomeModule
   ],
   providers: [],
   bootstrap: [AppComponent]
