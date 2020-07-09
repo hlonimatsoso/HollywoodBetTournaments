@@ -1,0 +1,34 @@
+<div class="toolBar">
+    <mat-checkbox (change)="onEnableToolBarEditingOptionsChanged($event.checked)"></mat-checkbox>
+    <span class="margin_x_5">Enabler Editing</span>
+    <div class="toolBarButtons margin_x_5" *ngIf="enableEditing">
+        <mat-button-toggle-group (change)="onActionChange($event)">
+            <mat-button-toggle value="Add">Add</mat-button-toggle>
+            <mat-button-toggle disabled value="Edit">Edit</mat-button-toggle>
+            <mat-button-toggle value="Delete">Delete</mat-button-toggle>
+          </mat-button-toggle-group>
+    </div>
+     <div *ngIf="enableEditing && (action != 'Delete')">
+        <mat-form-field>
+            <mat-label>Tournament Name</mat-label>
+            <input #name matInput placeholder="Durban July" [formControl]="_tournamentName" required>
+            <mat-hint>Enter name here</mat-hint>
+            <mat-error *ngIf="_tournamentName.invalid">{{getErrorMessage()}}</mat-error>
+        </mat-form-field>
+        <button mat-button [disabled]="_tournamentName.invalid" (click)="RunUpdate()">{{selectedBUttonText}}</button>
+     </div>
+
+     <div class="chips" *ngIf="enableEditing && (action == 'Delete')">
+       <span>Deleting the following tournaments:</span>
+        <mat-chip-list>
+            <mat-chip selectable removable (removed)="remove(chip)" *ngFor="let chip of tournamentDeleteList" selected color="warn">
+              {{chip.tournamentName}}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+        </mat-chip-list>
+         
+          
+        <button mat-button [disabled]="tournamentDeleteList.length == 0" (click)="deleteTournament()">{{selectedBUttonText}}</button>
+     </div>
+        
+</div>

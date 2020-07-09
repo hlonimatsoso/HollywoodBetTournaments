@@ -1,6 +1,6 @@
 import { Component, OnInit,Input } from '@angular/core';
 import { Tournament } from '../../../shared/models/Tournament';
-import { MessageBusService } from '../../../shared/services/message-bus.service';
+import { TournamentOracleService } from '../tournament-oracle.service';
 
 
 
@@ -15,7 +15,7 @@ export class TournamentCardComponent implements OnInit {
   @Input() enableEditing:boolean;
   //_isEditing:boolean;
 
-  constructor(private _messageBus:MessageBusService) { }
+  constructor(private _ohGreatOracle:TournamentOracleService) { }
 
   ngOnInit(): void {
   }
@@ -36,7 +36,7 @@ export class TournamentCardComponent implements OnInit {
     
     console.log(`TournamentCard.onEdit(): Editing this tournament -> ${JSON.stringify(this.tournament)}`);
 
-    this._messageBus.tournamentCard_onEdit_BroadcastUpdate(this.tournament);
+    this._ohGreatOracle.tournament_card_onEdit_Tournament_BroadcastUpdate(this.tournament);
   }
 
   onDelete(eventArgument){
@@ -51,7 +51,7 @@ export class TournamentCardComponent implements OnInit {
 
     console.log(`TournamentCard.onDelete(): Marking tournament for deletion -> ${JSON.stringify(tournament)}`);
 
-    this._messageBus.tournamentCard_onDelete_BroadcastUpdate(tournament);
+    //this._messageBus.tournamentCard_onDelete_BroadcastUpdate(tournament);
   }
 
 }

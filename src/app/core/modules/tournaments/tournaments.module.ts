@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule,ReactiveFormsModule } from '@angular/forms';
+
 
 import { TournamentRoutingModule } from './tournament-routing.module';
 import { SharedModule } from '../../shared/shared.module';
@@ -10,16 +12,21 @@ import { TournamentOracleService } from './tournament-oracle.service';
 import { MaterialModule } from '../material/material.module';
 import { TournamentCardComponent } from './tournament-card/tournament-card.component';
 import { TournamentCardListComponent } from './tournament-card-list/tournament-card-list.component';
+import { TournamentCardToolBarComponent } from './tournament-card-tool-bar/tournament-card-tool-bar.component';
+//import { MaterialModule } from '../material/material.module';
+
 
 
 
 @NgModule({
-  declarations: [TournamentCardComponent, TournamentCardListComponent],
+  declarations: [TournamentCardComponent, TournamentCardListComponent, TournamentCardToolBarComponent],
   imports: [
     CommonModule,
     TournamentRoutingModule,
     SharedModule,
-    MaterialModule
+    MaterialModule,
+    FormsModule,
+    ReactiveFormsModule    
   ],providers:[
     TournamentService,
     TournamentOracleService,

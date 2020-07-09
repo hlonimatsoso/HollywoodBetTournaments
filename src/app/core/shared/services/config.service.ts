@@ -59,7 +59,11 @@ export class ConfigService {
     result.TournamentOracleService_Can_Log = true;
     result.EventOracleService_Can_Log = true;
     result.EventDetailsOracleService_Can_Log = true;
-    
+
+    result.Tournament_ToolBar_Can_Log = true;
+    result.Events_ToolBar_Can_Log = true;
+    result.Detail_Events_ToolBar_Can_Log = true;
+  
     return result;
   }
 }

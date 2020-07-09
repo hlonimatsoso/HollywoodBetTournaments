@@ -3,8 +3,13 @@
     justify-content: center;
 }
 
-.tournamentsContainer{
+.toolBar{
+    display: flex;
+}
+
+.tournamentsContainer, .chips{
     display: flex;
     flex-flow: wrap;
     padding-top: 25px;
+    justify-content: space-around;
 }

@@ -13,7 +13,14 @@ import {map, tap,finalize,catchError } from 'rxjs/operators';
 })
 export class TournamentOracleService implements OnInit {
 
-  //private _tournaments_onGetAll = new Subject<Tournament[]>();
+  private _tournament_ToolBar_on_Action_Change = new Subject<string>();
+  private _tournament_ToolBar_on_Enable_ToolBar_Editing_Options_Change = new Subject<boolean>();
+  private _tournament_ToolBar_on_add_Tournament = new Subject<Tournament>();
+  private _tournament_card_onEdit_Tournament = new Subject<Tournament>();
+  private _tournament_toolBar_onUpdate_Tournament = new Subject<Tournament>();
+
+
+
   
   constructor(private _service:TournamentService, private _config:ConfigService) { }
   
@@ -23,50 +30,136 @@ export class TournamentOracleService implements OnInit {
 
   tounaments:Tournament[];
 
-  // get tournaments_onGetAll$(): Observable<Tournament[]> {
-  //   return this._tournaments_onGetAll.asObservable();
-  // }
+  get tournament_ToolBar_onActionChange$(): Observable<string> {
+    return this._tournament_ToolBar_on_Action_Change.asObservable();
+  }
 
-  // public tournaments_onGetAll_BroadcastUpdate(updatedList:Tournament[]) {
-  //   this._tournaments_onGetAll.next(updatedList);
-  //   if(this._config.LoggingSettings.TournamentOracleService_Can_Log)
-  //     console.log(`TournamentOracle.tournaments_onGetAll_BroadcastUpdate(): Broadcast -> ${JSON.stringify(updatedList)})`);
-  // }
+  get tournament_ToolBar_on_Enable_ToolBar_Editing_Options_Change$(): Observable<boolean> {
+    return this._tournament_ToolBar_on_Enable_ToolBar_Editing_Options_Change.asObservable();
+  }
 
-  pleaseMeGetAllTournaments():Observable<Tournament[]>{
+  get tournament_ToolBar_on_add_Tournament$(): Observable<Tournament> {
+    return this._tournament_ToolBar_on_add_Tournament.asObservable();
+  }
+
+  get tournament_card_on_edit_Tournament$(): Observable<Tournament> {
+    return this._tournament_card_onEdit_Tournament.asObservable();
+  }
+
+  get tournament_toolBar_onUpdate_Tournament$(): Observable<Tournament> {
+    return this._tournament_toolBar_onUpdate_Tournament.asObservable();
+  }
+
+
+  public tournament_toolBar_onActionChange_BroadcastUpdate(action:string) {
+    this._tournament_ToolBar_on_Action_Change.next(action);
+    if(this._config.LoggingSettings.TournamentOracleService_Can_Log)
+      console.log(`TournamentOracle.tournament_toolBar_onActionChange_BroadcastUpdate(): Broadcast -> ${action})`);
+  }
+
+  public tournament_ToolBar_onEnableToolBarEditingOptions_Change_BroadcastUpdate(isEnabled:boolean) {
+    this._tournament_ToolBar_on_Enable_ToolBar_Editing_Options_Change.next(isEnabled);
+    if(this._config.LoggingSettings.TournamentOracleService_Can_Log)
+      console.log(`TournamentOracle.tournament_toolBar_onActionChange_BroadcastUpdate(): Broadcast -> ${isEnabled})`);
+  }
+
+  public tournament_ToolBar_on_add_Tournament_BroadcastUpdate(tournament:Tournament) {
+    this._tournament_ToolBar_on_add_Tournament.next(tournament);
+    if(this._config.LoggingSettings.TournamentOracleService_Can_Log)
+      console.log(`TournamentOracle._tournament_ToolBar_on_add_Tournament(): Broadcasting new tournament -> ${JSON.stringify(tournament)})`);
+  }
+
+  public tournament_card_onEdit_Tournament_BroadcastUpdate(tournament:Tournament) {
+    this._tournament_card_onEdit_Tournament.next(tournament);
+    if(this._config.LoggingSettings.TournamentOracleService_Can_Log)
+      console.log(`TournamentOracle.tournament_card_onEdit_Tournament_BroadcastUpdate(): Broadcasting cards wishes to be edited -> ${JSON.stringify(tournament)})`);
+  }
+
+  public tournament_toolBar_onUpdate_Tournament_BroadcastUpdate(tournament:Tournament) {
+    this._tournament_toolBar_onUpdate_Tournament.next(tournament);
+    if(this._config.LoggingSettings.TournamentOracleService_Can_Log)
+      console.log(`TournamentOracle.tournament_toolBar_onUpdate_Tournament_BroadcastUpdate(): Broadcasting updated touranment -> ${JSON.stringify(tournament)})`);
+  }
+
+  pleaseGetMeGetAllTournaments():Observable<Tournament[]>{
 
     if(this._config.LoggingSettings.TournamentOracleService_Can_Log)
-      console.log(`TournamentOracle.GetAllTournaments(): Requesting all tournaments...`);
+      console.log(`TournamentOracle.pleaseGetMeGetAllTournaments(): Requesting all tournaments...`);
 
     return this._service.GetAllTournaments()
                   .pipe(
                     tap(dbList=>{
                       if(this._config.LoggingSettings.TournamentOracleService_Can_Log)
-                        console.log(`TournamentOracle.GetAllTournaments().tap(): Setting The Oracles list with the result -> ${JSON.stringify(dbList)}`);
+                        console.log(`TournamentOracle.pleaseGetMeGetAllTournaments().tap(): Setting The Oracles list with the result -> ${JSON.stringify(dbList)}`);
                       this.tounaments = dbList;
                     }),
                     finalize(()=>{
                       if(this._config.LoggingSettings.TournamentOracleService_Can_Log)
-                        console.log(`TournamentOracle.GetAllTournaments().finalize(): Requesting all tournaments complete`);
+                        console.log(`TournamentOracle.pleaseGetMeGetAllTournaments().finalize(): Requesting all tournaments complete`);
                     }),
                     catchError( val =>{ 
                       var msg:String;
                       msg = "*** \nTournament Oracle CAUGHT sleeping on the job ";
-                      console.error(`TournamentOracle.GetAllTournaments().catchError(): !!! ERROR !!! -> ${msg}\n***`);
+                      console.error(`TournamentOracle.pleaseGetMeGetAllTournaments().catchError(): !!! ERROR !!! -> ${msg}\n***`);
                       return of(`${msg}: ${val}`)
                     })
 
                   );
 
-                  // .subscribe(dbList => {
-                  //   debugger;
-                  //   this.tounaments = dbList;
-                  //   //this.tournamentsGetAll_BroadcastUpdate(this.tounaments);
-                  //   console.log(`TournamentOracle.GetAllTournaments().subscribe: Requesting all tournaments complete`);
-                  // })
-    //sub.unsubscribe();
+  }
 
-    //return of(this.tounaments)
+  pleaseAddATournament(data:Tournament):Observable<any>{
+
+    if(this._config.LoggingSettings.TournamentOracleService_Can_Log)
+      console.log(`TournamentOracle.pleaseAddATournaments(): Adding 1 tournament -> ${data}`);
+
+    return this._service.PostATournament(data)
+                  .pipe(
+                    tap(dbList=>{
+                      if(this._config.LoggingSettings.TournamentOracleService_Can_Log)
+                        console.log(`TournamentOracle.pleaseAddATournament().tap(): Result if any -> ${JSON.stringify(dbList)}`);
+                    }),
+                    finalize(()=>{
+                      if(this._config.LoggingSettings.TournamentOracleService_Can_Log)
+                        console.log(`TournamentOracle.pleaseAddATournament().finalize(): Request to Add a tournament is complete. About to broadcast new tournament -> ${JSON.stringify(data)}`);
+                        this.tournament_ToolBar_on_add_Tournament_BroadcastUpdate(data);
+                    }),
+                    catchError( val =>{ 
+                      var msg:String;
+                      msg = "*** \nTournament Oracle CAUGHT sleeping on the job ";
+                      console.error(`TournamentOracle.pleaseAddATournament().catchError(): !!! ERROR !!! -> ${msg}\n***`);
+                      return of(`${msg}: ${val}`)
+                    })
+
+                  );
+
+  }
+
+  pleaseUpdateATournament(data:Tournament):Observable<any>{
+
+    if(this._config.LoggingSettings.TournamentOracleService_Can_Log)
+      console.log(`TournamentOracle.pleaseUpdateATournament(): Updating 1 tournament -> ${data}`);
+
+    return this._service.UpdateTournament(data)
+                  .pipe(
+                    tap(result=>{
+                      if(this._config.LoggingSettings.TournamentOracleService_Can_Log)
+                        console.log(`TournamentOracle.pleaseUpdateATournament().tap(): Result if any -> ${JSON.stringify(result)}`);
+                    }),
+                    finalize(()=>{
+                      if(this._config.LoggingSettings.TournamentOracleService_Can_Log)
+                        console.log(`TournamentOracle.pleaseUpdateATournament().finalize(): Request to Update the tournament is complete. About to broadcast the UPDATED tournament -> ${JSON.stringify(data)}`);
+                        this.tournament_toolBar_onUpdate_Tournament_BroadcastUpdate(data);
+                    }),
+                    catchError( val =>{ 
+                      var msg:String;
+                      msg = "*** \nTournament Oracle CAUGHT sleeping on the job ";
+                      console.error(`TournamentOracle.pleaseUpdateATournament().catchError(): !!! ERROR !!! -> ${msg}\n***`);
+                      return of(`${msg}: ${val}`)
+                    })
+
+                  );
+
   }
 
 }

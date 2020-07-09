@@ -5,13 +5,15 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TournamentsModule } from './core/modules/tournaments/tournaments.module';
 import { HomeRoutingModule } from './home/home-routing.module';
 
-import { AppComponent } from './app.component';
 import {HomeModule} from './home/home.module';
 import {CoreModule} from './core/core.module';
 import {SharedModule} from './core/shared/shared.module';
 
+import { AppComponent } from './app.component';
+import { MessageBusService } from './core/shared/services/message-bus.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
-import { importType } from '@angular/compiler/src/output/output_ast';
+import { MaterialModule } from './core/modules/material/material.module';
 
 
 
@@ -26,9 +28,20 @@ import { importType } from '@angular/compiler/src/output/output_ast';
     SharedModule,
     HomeRoutingModule,
     HomeModule,
-    TournamentsModule
+    TournamentsModule,
+    MaterialModule
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule { 
+
+  constructor(private _messageBus:MessageBusService, private _spinner: NgxSpinnerService){
+    this._messageBus.httpRequest_InProgess$.subscribe(x=>{
+      if(x)
+        this._spinner.show();
+      else
+        this._spinner.hide();
+    });
+  }
+}

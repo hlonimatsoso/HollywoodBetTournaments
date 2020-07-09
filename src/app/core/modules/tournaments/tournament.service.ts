@@ -24,4 +24,12 @@ export class TournamentService extends BaseHttpClient {
   PostATournament(data:any){
     return this.Post(this._configService.tournamentsUrl,data);
   }
+
+  UpdateTournament(data:any){
+    /*
+      I post cause the API's POST method checks for a ID on the incomming tournament,  
+      if it finds it, it run an update against that ID
+    */ 
+    return this.Post(this._configService.tournamentsUrl,data);
+  }
 }

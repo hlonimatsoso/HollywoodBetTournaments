@@ -24,7 +24,7 @@ export class MessageBusService {
 
 
 
-  get httpRequestInProgess$(): Observable<boolean> {
+  get httpRequest_InProgess$(): Observable<boolean> {
     return this._httpRequest_InProgess.asObservable();
   }
   get tournamentCard_onEdit$(): Observable<Tournament> {

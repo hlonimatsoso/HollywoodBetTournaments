@@ -61,9 +61,9 @@ export abstract class BaseHttpClient extends LoggingRules{
         this._messageBus.httpRequest_InProgess_BroadcastUpdate(true);
   
         if(this._loggingRules.BaseHttpClient_Post_Can_Log)
-            console.log(`BaseHttpClient.Post(${this._config.eventsUrl}) : Send HTTP POST with body -> ${JSON.stringify(data)}`);
+            console.log(`BaseHttpClient.Post(${url}) : Send HTTP POST with body -> ${JSON.stringify(data)}`);
 
-        var result = this._http.post<any>(url,data, this._httpOptions)
+          var result = this._http.post<any>(url,data, this._httpOptions)
           .pipe(
             tap((result)=>{ 
                 if(this._loggingRules.BaseHttpClient_Post_Can_Log)
