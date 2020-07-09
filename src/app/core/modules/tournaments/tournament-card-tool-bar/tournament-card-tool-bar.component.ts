@@ -38,6 +38,12 @@ export class TournamentCardToolBarComponent implements OnInit {
       this._tournamentName.setValue(this.activeTournamentForEditing.tournamentName);
       this.onActionChange({"value":"Edit"});
     });
+
+    this._ohGreatOracle.tournament_card_onDelete_Tournament$.subscribe((tournament)=>{
+      this.activeTournamentForEditing = tournament;
+      this.tournamentDeleteList.push(tournament);
+      this.onActionChange({"value":"Delete"});
+    });
   }
 
   onActionChange(event:any){
@@ -74,11 +80,17 @@ export class TournamentCardToolBarComponent implements OnInit {
   }
 
   remove(t: Tournament): void {
-    const index = this.tournamentDeleteList.indexOf(t);
+    var index = this.tournamentDeleteList.indexOf(t);
 
     if (index >= 0) {
       this.tournamentDeleteList.splice(index, 1);
     }
+
+    index = this._ohGreatOracle.tounamentsToDelete.indexOf(t);
+
+        if (index >= 0) {
+          this._ohGreatOracle.tounamentsToDelete.splice(index, 1);
+        }
   }
 
   RunUpdate(){
@@ -149,16 +161,17 @@ export class TournamentCardToolBarComponent implements OnInit {
         });
   }
 
-  // deleteTournament(){
-  //   // this._tournamentService.deleteTournament(this.deleteList)
-  //   // .pipe(
-  //   //   finalize(()=>{
-  //   //     console.log(`Tournament Toolbar: tournamentToolBar_deleteTournamentList_sendUpdate: ${this.deleteList}`);
-  //   //     this._messageBus.tournamentToolBar_deleteTournamentList_sendUpdate(this.deleteList);
-  //   //     this.deleteList = [];
-  //   //   })
-  //   // )
-  //   // .subscribe(o=>{
-  //   //   console.log(`Tournament Toolbar: Tournament service delete result: ${o}`);
-  //   // });
+  deleteTournament(){
+    this._ohGreatOracle.pleaseDeleteTheseTournaments(this.tournamentDeleteList)
+    .pipe(
+      finalize(()=>{
+        console.log(`Tournament Toolbar: tournamentToolBar_deleteTournamentList_sendUpdate: ${this.tournamentDeleteList}`);
+        this._ohGreatOracle.tournament_toolBar_onDelete_TournamentList_BroadcastUpdate(this.tournamentDeleteList);
+        this.tournamentDeleteList = [];
+      })
+    )
+    .subscribe(o=>{
+      console.log(`Tournament Toolbar: Tournament service delete result: ${o}`);
+    });
+  }
 }

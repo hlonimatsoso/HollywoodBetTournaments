@@ -4,7 +4,7 @@ export class LoggingSettings{
     BaseHttpClient_Get_Can_Log:boolean;
     BaseHttpClient_Post_Can_Log:boolean;
     BaseHttpClient_Put_Can_Log:boolean;
-    BaseHttpClient_Detele_Can_Log:boolean;
+    BaseHttpClient_Delete_Can_Log:boolean;
 
     // The Oracles
     TournamentOracleService_Can_Log:boolean;

@@ -51,10 +51,10 @@ export class ConfigService {
 
     result = new LoggingSettings();
     
-    result.BaseHttpClient_Detele_Can_Log = true;
+    result.BaseHttpClient_Delete_Can_Log = true;
     result.BaseHttpClient_Post_Can_Log = true;
     result.BaseHttpClient_Put_Can_Log = true;
-    result.BaseHttpClient_Detele_Can_Log = true;
+    result.BaseHttpClient_Delete_Can_Log = true;
 
     result.TournamentOracleService_Can_Log = true;
     result.EventOracleService_Can_Log = true;

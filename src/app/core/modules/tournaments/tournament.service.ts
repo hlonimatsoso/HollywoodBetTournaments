@@ -32,4 +32,8 @@ export class TournamentService extends BaseHttpClient {
     */ 
     return this.Post(this._configService.tournamentsUrl,data);
   }
+
+  DeleteTournamentList(data:any[]){
+    return this.Delete(this._configService.tournamentsUrl,data);
+  }
 }

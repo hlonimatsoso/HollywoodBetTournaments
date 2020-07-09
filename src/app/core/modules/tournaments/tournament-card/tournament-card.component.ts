@@ -15,6 +15,11 @@ export class TournamentCardComponent implements OnInit {
   @Input() enableEditing:boolean;
   //_isEditing:boolean;
 
+  get isMarkedForDeletion(){
+    const index = this._ohGreatOracle.tounamentsToDelete.findIndex(t => t.tournamentID == this.tournament.tournamentID);
+
+    return index > -1;
+  }
   constructor(private _ohGreatOracle:TournamentOracleService) { }
 
   ngOnInit(): void {
@@ -50,7 +55,8 @@ export class TournamentCardComponent implements OnInit {
     tournament.tournamentName = name;
 
     console.log(`TournamentCard.onDelete(): Marking tournament for deletion -> ${JSON.stringify(tournament)}`);
-
+    this._ohGreatOracle.tournament_card_onDelete_Tournament_BroadcastUpdate(this.tournament);
+    //this._ohGreatOracle.tournament_toolBar_onActionChange_BroadcastUpdate("Delete");
     //this._messageBus.tournamentCard_onDelete_BroadcastUpdate(tournament);
   }
 

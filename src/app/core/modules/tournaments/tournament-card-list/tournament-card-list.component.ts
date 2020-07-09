@@ -55,7 +55,23 @@ export class TournamentCardListComponent implements OnInit,OnDestroy {
       //console.log(`Tournament List: After update: (${this._tournaments[index].tournamentID}) ${this._tournaments[index].tournamentName} `);
 
     });
+
+    this._ohGreatOracle.tournament_toolBar_onDelete_TournamentList$.subscribe((tournamentList)=>{
+     this.removefromList(tournamentList)
+    });
         
+  }
+
+  removefromList(list:Tournament[]){
+    var index;
+    for (var t of list) {
+      
+      index = this.tournaments.indexOf(t);
+
+      if (index >= 0) {
+        this.tournaments.splice(index, 1);
+      }
+    }
   }
 
   get isTournamentListEmpty(){

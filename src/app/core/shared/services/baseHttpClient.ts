@@ -32,7 +32,7 @@ export abstract class BaseHttpClient extends LoggingRules{
 
         this._messageBus.httpRequest_InProgess_BroadcastUpdate(true);
 
-        if(this._loggingRules.BaseHttpClient_Detele_Can_Log)
+        if(this._loggingRules.BaseHttpClient_Get_Can_Log)
             console.log(`BaseHttpClient.getAll(${this._config.eventsUrl}) : Sending HTTP GET request...`);
 
         return this._http.get<any>(url, this._httpOptions)
@@ -82,6 +82,61 @@ export abstract class BaseHttpClient extends LoggingRules{
                 return of(`${msg}: ${error}`)
               })
           );
+    
+          return result;
+      }
+
+      Delete(url:string,data:any):Observable<any> {
+
+        this._messageBus.httpRequest_InProgess_BroadcastUpdate(true);
+  
+        if(this._loggingRules.BaseHttpClient_Delete_Can_Log)
+            console.log(`BaseHttpClient.Delete(${url}) : Send HTTP Delete with body -> ${JSON.stringify(data)}`);
+        
+        var result = this._http.request('DELETE', url + '/Delete', {
+          headers:new HttpHeaders({
+            'Content-Type':  'application/json'//,
+            //'Authorization': token
+          }),
+          body: data 
+          }).pipe(
+            tap((result)=>{ 
+                if(this._loggingRules.BaseHttpClient_Delete_Can_Log)
+                    console.log(`BaseHttpClient.Post().Tap(): Result -> ` + JSON.stringify(result)); 
+            }),
+            finalize(()=>{
+                if(this._loggingRules.BaseHttpClient_Delete_Can_Log)
+                    console.log(`BaseHttpClient.DELETE().finalize(): HTTP DELETE request complete.`);
+                    this._messageBus.httpRequest_InProgess_BroadcastUpdate(false);
+            }),
+            catchError( error =>{ 
+                var msg:String;
+                msg = "*** \nHTTP client CAUGHT sleeping on the job ";
+                console.error(`BaseHttpClient.DELETE()._http.DELETE.catchError(): CAUGHT '${url}' with ${JSON.stringify(data)} ERROR -> ${msg}\n***`);
+                return of(`${msg}: ${error}`)
+              })
+          );
+
+
+          // var result = this._http.delete<any>(url,data, this._httpOptions)
+          // .pipe(
+          //   tap((result)=>{ 
+          //       if(this._loggingRules.BaseHttpClient_Delete_Can_Log)
+          //           console.log(`BaseHttpClient.Post().Tap(): Result -> ` + JSON.stringify(result)); 
+
+          //   }),
+          //   finalize(()=>{
+          //       if(this._loggingRules.BaseHttpClient_Delete_Can_Log)
+          //           console.log(`BaseHttpClient.Post().finalize(): HTTP POST request complete.`);
+          //           this._messageBus.httpRequest_InProgess_BroadcastUpdate(false);
+          //   }),
+          //   catchError( error =>{ 
+          //       var msg:String;
+          //       msg = "*** \nHTTP client CAUGHT sleeping on the job ";
+          //       console.error(`BaseHttpClient.Post()._http.Post.catchError(): CAUGHT '${url}' with ${JSON.stringify(data)} ERROR -> ${msg}\n***`);
+          //       return of(`${msg}: ${error}`)
+          //     })
+          // );
     
           return result;
       }
