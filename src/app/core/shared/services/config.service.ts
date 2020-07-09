@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import {  UserManagerSettings } from 'oidc-client';
+import {  LoggingSettings } from '../models/LoggingSettings';
+
 
 @Injectable({
   providedIn: 'root'
@@ -41,5 +43,23 @@ export class ConfigService {
 
   get eventDetailUrl(){
     return "https://localhost:11000/api/EventDetail";
+  }
+
+  get LoggingSettings():LoggingSettings{
+    
+    var result:LoggingSettings;
+
+    result = new LoggingSettings();
+    
+    result.BaseHttpClient_Detele_Can_Log = true;
+    result.BaseHttpClient_Post_Can_Log = true;
+    result.BaseHttpClient_Put_Can_Log = true;
+    result.BaseHttpClient_Detele_Can_Log = true;
+
+    result.TournamentOracleService_Can_Log = true;
+    result.EventOracleService_Can_Log = true;
+    result.EventDetailsOracleService_Can_Log = true;
+    
+    return result;
   }
 }

@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ConfigService } from './config/config.service';
+import { ConfigService } from './services/config.service';
 import { HttpClientModule } from '@angular/common/http';
+import { MessageBusService } from './services/message-bus.service';
+
 
 
 
@@ -12,7 +14,8 @@ import { HttpClientModule } from '@angular/common/http';
     HttpClientModule
   ],
   providers:[
-    ConfigService
+    ConfigService,
+    MessageBusService
   ]
 })
 export class SharedModule { }

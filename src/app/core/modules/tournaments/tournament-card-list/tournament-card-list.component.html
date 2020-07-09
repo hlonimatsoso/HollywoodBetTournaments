@@ -1,0 +1,14 @@
+<div class="headingContainer">
+    <h3>Welcome to Hollywood Bet Tournaments</h3>
+</div>
+
+<!-- <app-tournament-tool-bar></app-tournament-tool-bar> -->
+
+<div *ngIf="!isTournamentListEmpty" class="tournamentsContainer">
+    <app-tournament-card class=".margin_X_5" *ngFor="let t of tournaments" [tournament]="t" [enableEditing]="enableEditing"></app-tournament-card>
+</div>
+
+<div *ngIf="isTournamentListEmpty" class="noContentToSee" #noContent>
+    Div.Fokol...
+</div>
+

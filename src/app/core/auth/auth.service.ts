@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 
 import { UserManager, UserManagerSettings, User } from 'oidc-client';
-import {ConfigService} from '../shared/config/config.service'
+import {ConfigService} from '../shared/services/config.service'
 import { BehaviorSubject } from 'rxjs'; 
 
 
