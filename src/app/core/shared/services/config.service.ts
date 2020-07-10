@@ -45,6 +45,10 @@ export class ConfigService {
     return "https://localhost:11000/api/EventDetail";
   }
 
+  get eventDetailStatusUrl(){
+    return "https://localhost:11000/api/EventDetailStatus";
+  }
+ 
   get LoggingSettings():LoggingSettings{
     
     var result:LoggingSettings;
@@ -66,4 +70,5 @@ export class ConfigService {
   
     return result;
   }
+  
 }

@@ -1,0 +1,15 @@
+.headingContainer{
+    display: flex;
+    justify-content: center;
+}
+
+.toolBar{
+    display: flex;
+}
+
+.eventsContainer, .chips{
+    display: flex;
+    flex-flow: wrap;
+    padding-top: 25px;
+    justify-content:space-around;
+}

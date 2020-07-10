@@ -1,0 +1,14 @@
+<div class="headingContainer">
+    <h3>See all breeds</h3>
+</div>
+
+<app-event-card-tool-bar></app-event-card-tool-bar>
+
+<div *ngIf="!isEventListEmpty" class="eventsContainer">
+    <app-event-details-card class=".margin_X_5" *ngFor="let t of events" [eventDetails]="t" [enableEditing]="enableEditing"></app-event-details-card>
+</div>
+
+<div *ngIf="isEventListEmpty" class="noContentToSee" #noContent>
+    Div.Fokol...
+</div>
+

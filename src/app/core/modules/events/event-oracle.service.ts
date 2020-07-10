@@ -63,6 +63,17 @@ export class EventOracleService implements OnInit {
     return this._event_toolBar_onDelete_EventList.asObservable();
   }
 
+  get currentEvents(){
+    var result:RaceEvent[] = [];
+    if(!event)
+    {
+       this.pleaseGetMeGetAllEvents().subscribe((x)=>{result = x;});
+    }
+
+    this.events = result;
+
+    return result;
+  }
 
   public event_toolBar_onActionChange_BroadcastUpdate(action:string) {
     this._event_ToolBar_on_Action_Change.next(action);

@@ -5,10 +5,16 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TournamentsModule } from './core/modules/tournaments/tournaments.module';
 import { EventsModule } from './core/modules/events/event.module';
 import { HomeRoutingModule } from './home/home-routing.module';
+import { EventDetailsModule } from './core/modules/event-details/event-details.module';
+
 
 import {HomeModule} from './home/home.module';
 import {CoreModule} from './core/core.module';
 import {SharedModule} from './core/shared/shared.module';
+import {AccountModule} from './core/account/account.module';
+import {AuthModule} from './core/auth/auth.module';
+
+
 
 import { AppComponent } from './app.component';
 import { MessageBusService } from './core/shared/services/message-bus.service';
@@ -31,7 +37,10 @@ import { MaterialModule } from './core/modules/material/material.module';
     HomeModule,
     TournamentsModule,
     MaterialModule,
-    EventsModule
+    EventsModule,
+    EventDetailsModule,
+    AccountModule,
+    AuthModule
   ],
   providers: [],
   bootstrap: [AppComponent]
