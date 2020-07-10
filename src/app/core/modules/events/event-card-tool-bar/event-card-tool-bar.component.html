@@ -1,0 +1,75 @@
+<div class="toolBar">
+    <mat-checkbox (change)="onEnableToolBarEditingOptionsChanged($event.checked)"></mat-checkbox>
+    <span class="margin_x_5">Enabler Editing</span>
+    <div class="toolBarButtons margin_x_5" *ngIf="enableEditing">
+        <mat-button-toggle-group (change)="onActionChange($event)">
+            <mat-button-toggle value="Add">Add</mat-button-toggle>
+            <mat-button-toggle disabled value="Edit">Edit</mat-button-toggle>
+            <mat-button-toggle value="Delete">Delete</mat-button-toggle>
+          </mat-button-toggle-group>
+    </div>
+     <div *ngIf="enableEditing && (action != 'Delete')">
+        <mat-form-field>
+            <mat-label>Event Name</mat-label>
+            <input #name matInput placeholder="Durban July" [formControl]="_eventName" required>
+            <mat-hint>Enter name here</mat-hint>
+            <mat-error *ngIf="_eventName.invalid">{{getErrorMessage()}}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" *ngIf="_eventName.valid">
+          <mat-label>Event Number</mat-label>
+          <input type="number" matInput placeholder="555" [formControl]="_eventNumber" required>
+          <mat-error *ngIf="_eventNumber.invalid">{{getEventNumberValidationMessage}}</mat-error>
+        </mat-form-field>
+    
+        <mat-form-field appearance="fill" *ngIf="_eventNumber.valid">
+          <mat-label>Choose an event start date</mat-label>
+          <input matInput [matDatepicker]="picker" [formControl]="_eventDate">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+    
+        <mat-form-field appearance="fill" *ngIf="_eventDate.valid">
+          <mat-label>When does the event end?</mat-label>
+          <input matInput [matDatepicker]="picker" [formControl]="_eventEndDate">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+    
+        <mat-form-field appearance="fill"  *ngIf="_eventEndDate.valid">
+          <mat-label>Tournament to join event under</mat-label>
+          <mat-select [formControl]="_tournament" required>
+            <mat-option>--</mat-option>
+            <mat-option *ngFor="let t of currentTournamentList" [value]="t.tournamentID">
+              {{t.tournamentName}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="_tournament.hasError('required')">Please choose a tournament</mat-error>
+          <!-- <mat-hint>{{tournament.value?.sound}}</mat-hint> -->
+        </mat-form-field>
+    
+        <mat-slide-toggle
+        *ngIf="_tournament.valid"
+        [formControl]="_autoClose">
+          Auto CLose
+        </mat-slide-toggle>
+
+        <button mat-button [disabled]="_eventName.invalid" (click)="RunUpdate()">{{selectedBUttonText}}</button>
+    
+    
+      </div>
+
+     <div class="chips" *ngIf="enableEditing && (action == 'Delete')">
+       <span>Deleting the following events:</span>
+        <mat-chip-list>
+            <mat-chip selectable removable (removed)="remove(chip)" *ngFor="let chip of eventDeleteList" selected color="warn">
+              {{chip.eventName}}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+        </mat-chip-list>
+         
+          
+        <button mat-button [disabled]="eventDeleteList.length == 0" (click)="deleteEvent()">{{selectedBUttonText}}</button>
+     </div>
+        
+</div>

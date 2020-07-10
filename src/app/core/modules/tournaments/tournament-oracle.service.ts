@@ -24,15 +24,15 @@ export class TournamentOracleService implements OnInit {
 
   
   constructor(private _service:TournamentService, private _config:ConfigService) {
-    this.tounamentsToDelete = [];
+    this.tournamentsToDelete = [];
   }
   
   ngOnInit(): void {
     //this.getAllTournaments();
   }
 
-  tounaments:Tournament[];
-  tounamentsToDelete:Tournament[];
+  tournaments:Tournament[];
+  tournamentsToDelete:Tournament[];
 
 
   get tournament_ToolBar_onActionChange$(): Observable<string> {
@@ -95,7 +95,7 @@ export class TournamentOracleService implements OnInit {
   }
 
   public tournament_card_onDelete_Tournament_BroadcastUpdate(tournament:Tournament) {
-    this.tounamentsToDelete.push(tournament);
+    this.tournamentsToDelete.push(tournament);
     this._tournament_card_onDelete_Tournament.next(tournament);
     if(this._config.LoggingSettings.TournamentOracleService_Can_Log)
       console.log(`TournamentOracle.tournament_card_onDelete_Tournament_BroadcastUpdate(): Broadcasting deleted touranment -> ${JSON.stringify(tournament)}`);
@@ -112,10 +112,10 @@ export class TournamentOracleService implements OnInit {
     var index;
     for (var t of list) {
       
-      index = this.tounaments.indexOf(t);
+      index = this.tournaments.indexOf(t);
 
       if (index >= 0) {
-        this.tounaments.splice(index, 1);
+        this.tournaments.splice(index, 1);
       }
     }
   }
@@ -130,7 +130,7 @@ export class TournamentOracleService implements OnInit {
                     tap(dbList=>{
                       if(this._config.LoggingSettings.TournamentOracleService_Can_Log)
                         console.log(`TournamentOracle.pleaseGetMeGetAllTournaments().tap(): Setting The Oracles list with the result -> ${JSON.stringify(dbList)}`);
-                      this.tounaments = dbList;
+                      this.tournaments = dbList;
                     }),
                     finalize(()=>{
                       if(this._config.LoggingSettings.TournamentOracleService_Can_Log)

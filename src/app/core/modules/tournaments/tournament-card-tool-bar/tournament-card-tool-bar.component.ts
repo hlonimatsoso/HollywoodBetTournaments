@@ -86,10 +86,10 @@ export class TournamentCardToolBarComponent implements OnInit {
       this.tournamentDeleteList.splice(index, 1);
     }
 
-    index = this._ohGreatOracle.tounamentsToDelete.indexOf(t);
+    index = this._ohGreatOracle.tournamentsToDelete.indexOf(t);
 
         if (index >= 0) {
-          this._ohGreatOracle.tounamentsToDelete.splice(index, 1);
+          this._ohGreatOracle.tournamentsToDelete.splice(index, 1);
         }
   }
 

@@ -16,7 +16,7 @@ export class TournamentCardComponent implements OnInit {
   //_isEditing:boolean;
 
   get isMarkedForDeletion(){
-    const index = this._ohGreatOracle.tounamentsToDelete.findIndex(t => t.tournamentID == this.tournament.tournamentID);
+    const index = this._ohGreatOracle.tournamentsToDelete.findIndex(t => t.tournamentID == this.tournament.tournamentID);
 
     return index > -1;
   }

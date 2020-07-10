@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { TournamentsModule } from './core/modules/tournaments/tournaments.module';
+import { EventsModule } from './core/modules/events/event.module';
 import { HomeRoutingModule } from './home/home-routing.module';
 
 import {HomeModule} from './home/home.module';
@@ -29,7 +30,8 @@ import { MaterialModule } from './core/modules/material/material.module';
     HomeRoutingModule,
     HomeModule,
     TournamentsModule,
-    MaterialModule
+    MaterialModule,
+    EventsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,0 +1,14 @@
+<div class="headingContainer">
+    <h3>Welcome to Hollywood Bet Events</h3>
+</div>
+
+<app-event-card-tool-bar></app-event-card-tool-bar>
+
+<div *ngIf="!isEventListEmpty" class="eventsContainer">
+    <app-event-card class=".margin_X_5" *ngFor="let t of events" [event]="t" [enableEditing]="enableEditing"></app-event-card>
+</div>
+
+<div *ngIf="isEventListEmpty" class="noContentToSee" #noContent>
+    Div.Fokol...
+</div>
+
