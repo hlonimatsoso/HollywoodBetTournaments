@@ -1,9 +1,9 @@
-<mat-card class="card">
-    <mat-card-title>({{tournament.tournamentID}}) {{tournament.tournamentName}}</mat-card-title>
-    <mat-card-subtitle>subtitle</mat-card-subtitle>
-    <mat-card-content>This is where most of the content will gom</mat-card-content>
-    <mat-card-actions>
-        <button mat-button>View</button> <button *ngIf="enableEditing" [attr.data-tournamentId]="tournament.tournamentID" [attr.data-tournamentName]="tournament.tournamentName" mat-button (click)="onEdit($event)">Edit</button> <button  *ngIf="enableEditing"  [attr.data-tournamentId]="tournament.tournamentID" [attr.data-tournamentName]="tournament.tournamentName" mat-button [disabled]="isMarkedForDeletion" (click)="onDelete($event)">Delete</button>
+<mat-card color="primary" class="card">
+    <mat-card-title color="primary">({{tournament.tournamentID}}) {{tournament.tournamentName}}</mat-card-title>
+    <mat-card-subtitle color="primary">subtitle</mat-card-subtitle>
+    <mat-card-content color="primary">This is where most of the content will gom</mat-card-content>
+    <mat-card-actions color="primary">
+        <button mat-button color="primary">View</button> <button  [@toggleNameState]="getIsEnabledState" [attr.data-tournamentId]="tournament.tournamentID" [attr.data-tournamentName]="tournament.tournamentName" mat-button color="accent" (click)="onEdit($event)">Edit</button> <button   [@toggleNameState]="getIsEnabledState"  [attr.data-tournamentId]="tournament.tournamentID" [attr.data-tournamentName]="tournament.tournamentName" mat-button color="accent" [disabled]="isMarkedForDeletion" (click)="onDelete($event) ">Delete</button>
     </mat-card-actions>
     <mat-card-footer>footer... so long friend....</mat-card-footer><!-- -->
 </mat-card>

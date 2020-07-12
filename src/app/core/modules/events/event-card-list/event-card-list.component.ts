@@ -20,27 +20,29 @@ export class EventCardListComponent implements OnInit,OnDestroy {
   constructor(private _ohGreatOracle:EventOracleService) { }
   ngOnDestroy(): void {
     console.log(`RaceEventCardList.ngOnDestroy() : orcalePleaseMeGetAllEventsSubscription.unsubscribe()`);
-    this.orcalePleaseMeGetAllEventsSubscription.unsubscribe();
   }
  
   ngOnInit(): void {
     
-     this.orcalePleaseMeGetAllEventsSubscription = this._ohGreatOracle.pleaseGetMeGetAllEvents()
-                                                        .pipe(
-                                                          tap(list => {
-                                                            console.log(`RaceEventCardList.ngOnInit()._ohGreatOracle.pleaseMeGetAllEvents().tap(): Result -> ${JSON.stringify(list)}`);
-                                                          })
-                                                        )
-                                                        .subscribe(list => {
-                                                          console.log(`RaceEventCardList.ngOnInit()._ohGreatOracle.pleaseMeGetAllEvents().subscribe(): Setting Card-List events with result -> ${JSON.stringify(list)}`);
-                                                         this.events = list;
-                                                        });
+    //  this.orcalePleaseMeGetAllEventsSubscription = this._ohGreatOracle.pleaseGetMeGetAllEvents()
+    //                                                     .pipe(
+    //                                                       tap(list => {
+    //                                                         console.log(`RaceEventCardList.ngOnInit()._ohGreatOracle.pleaseMeGetAllEvents().tap(): Result -> ${JSON.stringify(list)}`);
+    //                                                       })
+    //                                                     )
+    //                                                     .subscribe(list => {
+    //                                                       console.log(`RaceEventCardList.ngOnInit()._ohGreatOracle.pleaseMeGetAllEvents().subscribe(): Setting Card-List events with result -> ${JSON.stringify(list)}`);
+    //                                                      this.events = list;
+    //                                                     });
     
-
-    this._ohGreatOracle.event_ToolBar_on_add_Event$.subscribe((events)=>{
-      console.log(`RaceEventCardList.ngOnInit().events_ToolBar_on_add_RaceEvent$.subscribe() : Thank you oracle the new events -> ${JSON.stringify(events)}`);
-      this.events.push(events);
+    this._ohGreatOracle.ready$.subscribe(oracle => {
+      this.events = oracle.events$.getValue();
     });
+
+    // this._ohGreatOracle.event_ToolBar_on_add_Event$.subscribe((events)=>{
+    //   console.log(`RaceEventCardList.ngOnInit().events_ToolBar_on_add_RaceEvent$.subscribe() : Thank you oracle the new events -> ${JSON.stringify(events)}`);
+    //   this.events.push(events);
+    // });
 
     this._ohGreatOracle.event_ToolBar_on_Enable_ToolBar_Editing_Options_Change$.subscribe((setting)=>{
       console.log(`RaceEventCardList.ngOnInit().events_ToolBar_on_Enable_ToolBar_Editing_Options_Change$.subscribe() : Updating this.enableEditng to -> ${JSON.stringify(setting)}`);

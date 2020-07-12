@@ -1,14 +1,14 @@
 <div class="toolBar">
     <mat-checkbox (change)="onEnableToolBarEditingOptionsChanged($event.checked)"></mat-checkbox>
     <span class="margin_x_5">Enabler Editing</span>
-    <div class="toolBarButtons margin_x_5" *ngIf="enableEditing">
+    <div class="toolBarButtons margin_x_5" [@toggleNameState]="getToggleNameState">
         <mat-button-toggle-group (change)="onActionChange($event)">
             <mat-button-toggle value="Add">Add</mat-button-toggle>
             <mat-button-toggle disabled value="Edit">Edit</mat-button-toggle>
             <mat-button-toggle value="Delete">Delete</mat-button-toggle>
           </mat-button-toggle-group>
     </div>
-     <div *ngIf="enableEditing && (action != 'Delete')">
+     <div [@toggleNameState]="getToggleNameState">
         <mat-form-field>
             <mat-label>Tournament Name</mat-label>
             <input #name matInput placeholder="Durban July" [formControl]="_tournamentName" required>

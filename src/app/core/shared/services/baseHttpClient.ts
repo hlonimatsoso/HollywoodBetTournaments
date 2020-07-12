@@ -101,18 +101,21 @@ export abstract class BaseHttpClient extends LoggingRules{
           body: data 
           }).pipe(
             tap((result)=>{ 
+              debugger;
                 if(this._loggingRules.BaseHttpClient_Delete_Can_Log)
                     console.log(`BaseHttpClient.Post().Tap(): Result -> ` + JSON.stringify(result)); 
             }),
             finalize(()=>{
+              debugger;
                 if(this._loggingRules.BaseHttpClient_Delete_Can_Log)
                     console.log(`BaseHttpClient.DELETE().finalize(): HTTP DELETE request complete.`);
                     this._messageBus.httpRequest_InProgess_BroadcastUpdate(false);
             }),
             catchError( error =>{ 
+              debugger;
                 var msg:String;
                 msg = "*** \nHTTP client CAUGHT sleeping on the job ";
-                console.error(`BaseHttpClient.DELETE()._http.DELETE.catchError(): CAUGHT '${url}' with ${JSON.stringify(data)} ERROR -> ${msg}\n***`);
+                console.error(`BaseHttpClient.DELETE()._http.DELETE.catchError(): CAUGHT '${url}' with ${JSON.stringify(data)} ERROR -> ${JSON.stringify(error)}\n***`);
                 return of(`${msg}: ${error}`)
               })
           );

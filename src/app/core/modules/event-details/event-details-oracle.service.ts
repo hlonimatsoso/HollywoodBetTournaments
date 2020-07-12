@@ -9,10 +9,6 @@ import {RaceEvent} from '../../shared/models/Event';
 import {EventOracleService} from '../events/event-oracle.service';
 
 
-
-
-
-
 @Injectable({
   providedIn: 'root'
 })
@@ -26,12 +22,15 @@ export class EventDetailsOracleService implements OnInit {
   private _event_details_card_onDelete_Event = new Subject<EventDetail>();
   private _event_details_toolBar_onDelete_EventList = new Subject<EventDetail[]>();
 
-
+  
   
   constructor(private _service:EventDetailsService,private _eventsOracle:EventOracleService, private _config:ConfigService) {
     this.eventDetailsToDelete = [];
-    this.currentEvents = this._eventsOracle.events;
-    debugger;
+    //this.currentEvents = this._eventsOracle.events;
+    this._eventsOracle.ready$.subscribe(oracle => {
+      this.events = oracle.events$.getValue();
+    })
+    
      _service.GetAllEventDetailStatuses().subscribe((x)=>{
       this.availableStatuses = x;
      });
@@ -47,7 +46,7 @@ export class EventDetailsOracleService implements OnInit {
 
   availableStatuses:EventDetailStatus[];
 
-  currentEvents:RaceEvent[]
+  events:RaceEvent[]
 
 
   get event_details_ToolBar_onActionChange$(): Observable<string> {
@@ -140,14 +139,14 @@ export class EventDetailsOracleService implements OnInit {
   get getAvailableStatuses():EventDetailStatus[]{
     var result:EventDetailStatus[] = [];
     this._service.GetAllEventDetailStatuses().subscribe((x)=>{result = x;});
-    debugger;
+  
     return result;
   }
 
   get getCurrentEvents():RaceEvent[]{
     var result:RaceEvent[] = [];
     result = this._eventsOracle.currentEvents;
-    debugger;
+
     return result;
   }
 

@@ -21,7 +21,6 @@ import {TournamentOracleService  } from '../../tournaments/tournament-oracle.ser
 export class EventCardToolBarComponent implements OnInit {
 
   @Input() public enableEditing:boolean;
-  @ViewChild("name") nameField: ElementRef
 
   action:string;
 
@@ -139,7 +138,7 @@ export class EventCardToolBarComponent implements OnInit {
   }
 
   get currentTournamentList(){
-    return this._tournamentOracle.tournaments;
+    return this._tournamentOracle.tournaments$.getValue();
   }
 
   getErrorMessage() {
@@ -242,7 +241,7 @@ export class EventCardToolBarComponent implements OnInit {
     .pipe(
       finalize(()=>{
         console.log(`Event Toolbar: eventToolBar_deleteEventList_sendUpdate: ${this.eventDeleteList}`);
-        this._ohGreatOracle.event_toolBar_onDelete_EventList_BroadcastUpdate(this.eventDeleteList);
+        //this._ohGreatOracle.event_toolBar_onDelete_EventList_BroadcastUpdate(this.eventDeleteList);
         this.eventDeleteList = [];
       })
     )

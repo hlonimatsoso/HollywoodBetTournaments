@@ -13,6 +13,7 @@ import { MaterialModule } from '../material/material.module';
 import { TournamentCardComponent } from './tournament-card/tournament-card.component';
 import { TournamentCardListComponent } from './tournament-card-list/tournament-card-list.component';
 import { TournamentCardToolBarComponent } from './tournament-card-tool-bar/tournament-card-tool-bar.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 //import { MaterialModule } from '../material/material.module';
 
 
@@ -26,7 +27,8 @@ import { TournamentCardToolBarComponent } from './tournament-card-tool-bar/tourn
     SharedModule,
     MaterialModule,
     FormsModule,
-    ReactiveFormsModule    
+    ReactiveFormsModule,
+    BrowserAnimationsModule    
   ],providers:[
     TournamentService,
     TournamentOracleService,

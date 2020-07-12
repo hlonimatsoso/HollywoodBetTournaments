@@ -50,9 +50,9 @@ export class EventDetailsCardToolBarComponent implements OnInit {
     return this._ohGreatOracle.availableStatuses;
   }
 
-  get getAllEvents(){
+  get getEvents(){
   
-    return this._ohGreatOracle.currentEvents;
+    return this._ohGreatOracle.events;
   }
 
   constructor(private _ohGreatOracle:EventDetailsOracleService,private _config:ConfigService, private _tournamentOracle:TournamentOracleService) { }
@@ -165,7 +165,7 @@ export class EventDetailsCardToolBarComponent implements OnInit {
   }
 
   get currentTournamentList(){
-    return this._tournamentOracle.tournaments;
+    return this._tournamentOracle.tournaments$.getValue();
   }
 
   getErrorMessage() {

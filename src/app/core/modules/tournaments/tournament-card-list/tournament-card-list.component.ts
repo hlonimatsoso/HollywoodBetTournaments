@@ -12,35 +12,26 @@ import { tap } from 'rxjs/operators';
 })
 export class TournamentCardListComponent implements OnInit,OnDestroy {
 
-  tournaments:Tournament[] = [];
+  tournaments:Tournament[];
   enableEditing:boolean;
 
-  private orcalePleaseMeGetAllTournamentsSubscription:any;
-
   constructor(private _ohGreatOracle:TournamentOracleService) { }
+
   ngOnDestroy(): void {
     console.log(`TournamentCardList.ngOnDestroy() : orcalePleaseMeGetAllTournamentsSubscription.unsubscribe()`);
-    this.orcalePleaseMeGetAllTournamentsSubscription.unsubscribe();
-  }
+ }
  
   ngOnInit(): void {
-    
-     this.orcalePleaseMeGetAllTournamentsSubscription = this._ohGreatOracle.pleaseGetMeGetAllTournaments()
-                                                        .pipe(
-                                                          tap(list => {
-                                                            console.log(`TournamentCardList.ngOnInit()._ohGreatOracle.pleaseMeGetAllTournaments().tap(): Result -> ${JSON.stringify(list)}`);
-                                                          })
-                                                        )
-                                                        .subscribe(list => {
-                                                          console.log(`TournamentCardList.ngOnInit()._ohGreatOracle.pleaseMeGetAllTournaments().subscribe(): Setting Card-List tournaments with result -> ${JSON.stringify(list)}`);
-                                                         this.tournaments = list;
-                                                        });
-    
 
-    this._ohGreatOracle.tournament_ToolBar_on_add_Tournament$.subscribe((tournament)=>{
-      console.log(`TournamentCardList.ngOnInit().tournament_ToolBar_on_add_Tournament$.subscribe() : Thank you oracle the new tournament -> ${JSON.stringify(tournament)}`);
-      this.tournaments.push(tournament);
+    this._ohGreatOracle.ready$.subscribe(oracle => {
+      console.log(`TournamentCardList.ngOnInit()._ohGreatOracle.ready$.subscribe() : Ready to receive list update from the oracle`);
+      this.tournaments = oracle.tournaments$.getValue();    
     });
+
+    // this._ohGreatOracle.tournament_ToolBar_on_add_Tournament$.subscribe((tournament)=>{
+    //   console.log(`TournamentCardList.ngOnInit().tournament_ToolBar_on_add_Tournament$.subscribe() : Thank you oracle the new tournament -> ${JSON.stringify(tournament)}`);
+    //   this.tournaments.push(tournament);
+    // });
 
     this._ohGreatOracle.tournament_ToolBar_on_Enable_ToolBar_Editing_Options_Change$.subscribe((setting)=>{
       console.log(`TournamentCardList.ngOnInit().tournament_ToolBar_on_Enable_ToolBar_Editing_Options_Change$.subscribe() : Updating this.enableEditng to -> ${JSON.stringify(setting)}`);
