@@ -1,3 +1,27 @@
 .toolBar, .chips{
     display: flex;
+    
+    
+}
+
+.toolBar div{
+    margin-left: 10px;
+    margin-right: 10px;
+
+}
+
+.margin_x_10{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.chips mat-chip-list,ng-template span{
+    margin-left: 10px;
+    margin-right: 10px;
+
+}
+
+.addEdit{
+    display :flex;
+    flex-flow: row wrap;
 }

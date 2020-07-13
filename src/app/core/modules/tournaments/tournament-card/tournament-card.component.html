@@ -3,7 +3,9 @@
     <mat-card-subtitle color="primary">subtitle</mat-card-subtitle>
     <mat-card-content color="primary">This is where most of the content will gom</mat-card-content>
     <mat-card-actions color="primary">
-        <button mat-button color="primary">View</button> <button  [@toggleNameState]="getIsEnabledState" [attr.data-tournamentId]="tournament.tournamentID" [attr.data-tournamentName]="tournament.tournamentName" mat-button color="accent" (click)="onEdit($event)">Edit</button> <button   [@toggleNameState]="getIsEnabledState"  [attr.data-tournamentId]="tournament.tournamentID" [attr.data-tournamentName]="tournament.tournamentName" mat-button color="accent" [disabled]="isMarkedForDeletion" (click)="onDelete($event) ">Delete</button>
+        <button mat-button color="primary">View</button>
+        <button mat-button color="accent" (click)="onEdit($event)" [@YingYang]="getYingYangState">Edit</button>
+        <button  mat-button color="accent" (click)="onDelete($event)" [@YingYang]="getYingYangState" [disabled]="isMarkedForDeletion">Delete</button>
     </mat-card-actions>
     <mat-card-footer>footer... so long friend....</mat-card-footer><!-- -->
 </mat-card>
