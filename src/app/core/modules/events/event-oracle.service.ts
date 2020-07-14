@@ -4,117 +4,118 @@ import { RaceEvent } from './../../shared/models/Event';
 import {Subject,Observable, of, BehaviorSubject} from 'rxjs';
 import {ConfigService  } from '../../shared/services/config.service';
 import {map, tap,finalize,catchError } from 'rxjs/operators';
+import { Constants } from '../../shared/models/constants';
 
 
 
-
+/**
+ * Events Oracle Service will soon _support_ [Markdown](https://marked.js.org/)
+ * @description The co-rodinator for all things Events, from CRUD to facilitating communication between other oracles.
+ * @NB : All components subscribe _ONLY_ to the [ONLY] orcale within their module. Any communication required from other module 
+ * should _[STRICTL]_ go though from 1 Oracle to another and back to the component.   
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class EventOracleService  {
  
-  private _event_ToolBar_on_Action_Change = new Subject<string>();
-  private _event_ToolBar_on_Enable_ToolBar_Editing_Options_Change = new Subject<boolean>();
-  //private _event_ToolBar_on_add_Event = new Subject<RaceEvent>();
-  private _event_card_onEdit_Event = new Subject<RaceEvent>();
-  private _event_toolBar_onUpdate_Event = new Subject<RaceEvent>();
-  private _event_card_onDelete_Event = new Subject<RaceEvent>();
-  private _event_toolBar_onDelete_EventList = new Subject<RaceEvent[]>();
-
-  events$ = new BehaviorSubject(null);
   ready$ = new BehaviorSubject(this);
-  eventsToDelete:RaceEvent[];
+  events$ = new BehaviorSubject<RaceEvent[]>(null);
+  eventsToDelete$ = new BehaviorSubject(null);
+  currentEditingAction$ = new BehaviorSubject(Constants.toolbar_button_add_action);
+  currentEditingEvent$ = new BehaviorSubject(null);
+  isToolBarEnabled$ = new BehaviorSubject(false);
 
   
   constructor(private _service:EventService, private _config:ConfigService) {
-    console.log(`EventOracle.constructor() : Event Oracle IN De house !!!`);
-    this.eventsToDelete = [];
+    console.log(`EventOracle.constructor() : Loading events...`);
     this.loadEvents();
   }
-  
-  // ngOnInit(): void {
-  //   //this.getAllEvents();
+
+
+  // get currentEvents(){
+
+  //   return this.events$.getValue();
   // }
 
-  //events:RaceEvent[];
+  /**
+* @ngdoc function
+* @name setCurrentEditingEvent
+* @methodOf Event Oracle Service
+* @normallyExecutedBy The "Event Card" component
+* @description Sets event for editing, and eventually to be updated
+* @param {event=} RaceEvent event to mark for editing
+* @returns {void} no return
+*/
+setCurrentEditingEvent(event:RaceEvent){
+  this.currentEditingEvent$.next(event);
+  this.currentEditingAction$.next(Constants.toolbar_button_edit_action);
+}
+
+/**
+* @ngdoc function
+* @name onCurrentActionChange
+* @methodOf Event Oracle Service
+* @normallyExecutedBy The "Event Tool Bar" component
+* @description Broadcasts the change of the Action state of the Oracle.
+* @param {action=} string Either "Add", "Edit" or "Delete"
+* @returns {void} no return
+*/
+onCurrentActionChange(action:string){
+  this.currentEditingAction$.next(action);
+  if(action == Constants.toolbar_button_add_action)
+    this.currentEditingAction$.next(Constants.toolbar_button_add_action);
+}
 
 
-  get event_ToolBar_onActionChange$(): Observable<string> {
-    return this._event_ToolBar_on_Action_Change.asObservable();
-  }
+/**
+* @ngdoc function
+* @name onIsToolBarEnabledChange
+* @methodOf Event Oracle Service
+* @normallyExecutedBy The "Event Tool Bar" component
+* @description Broadcasts the change of the Events ToolBar's "On" & "Off" state
+* @param {action=} string Either "Add", "Edit" or "Delete"
+* @returns {void} no return
+*/
+onIsToolBarEnabledChange(flag:boolean){
+  this.isToolBarEnabled$.next(flag);
+}
 
-  get event_ToolBar_on_Enable_ToolBar_Editing_Options_Change$(): Observable<boolean> {
-    return this._event_ToolBar_on_Enable_ToolBar_Editing_Options_Change.asObservable();
-  }
+/**
+* @ngdoc function
+* @name getEventByID
+* @methodOf Event Oracle Service
+* @normallyExecutedBy Those want an Event, but only have the ID
+* @description Returns the Event with the argument ID
+* @param eventID Number
+* @returns Event 
+*/
+getEventByID(eventID:number){
+  debugger;
+  return this.events$.getValue().find( x => x.eventID == eventID);
+}
 
-  // get event_ToolBar_on_add_Event$(): Observable<RaceEvent> {
-  //   return this._event_ToolBar_on_add_Event.asObservable();
-  // }
 
-  get event_card_on_edit_Event$(): Observable<RaceEvent> {
-    return this._event_card_onEdit_Event.asObservable();
-  }
 
-  get event_toolBar_onUpdate_Event$(): Observable<RaceEvent> {
-    return this._event_toolBar_onUpdate_Event.asObservable();
-  }
+/**
+* @ngdoc function
+* @name addToEventDeleteList
+* @methodOf Event Oracle Service
+* @normallyExecutedBy The "Event Card" component
+* @description Soft deletes an item on the screen before the db update
+* @param {event=} tournament tournament to mark for deletion
+* @returns {void} no return
+*/
+addToEventDeleteList(event:RaceEvent){
+  var currentList:RaceEvent[] = this.eventsToDelete$.getValue();
+   
+   if(!currentList)
+     currentList = [];
 
-  get event_card_onDelete_Event$(): Observable<RaceEvent> {
-    return this._event_card_onDelete_Event.asObservable();
-  }
-
-  get event_toolBar_onDelete_EventList$(): Observable<RaceEvent[]> {
-    return this._event_toolBar_onDelete_EventList.asObservable();
-  }
-
-  get currentEvents(){
-
-    return this.events$.getValue();
-  }
-
-  public event_toolBar_onActionChange_BroadcastUpdate(action:string) {
-    this._event_ToolBar_on_Action_Change.next(action);
-    if(this._config.LoggingSettings.EventOracleService_Can_Log)
-      console.log(`EventOracle.event_toolBar_onActionChange_BroadcastUpdate(): Broadcast -> ${action}`);
-  }
-
-  public event_ToolBar_onEnableToolBarEditingOptions_Change_BroadcastUpdate(isEnabled:boolean) {
-    this._event_ToolBar_on_Enable_ToolBar_Editing_Options_Change.next(isEnabled);
-    if(this._config.LoggingSettings.EventOracleService_Can_Log)
-      console.log(`EventOracle.event_toolBar_onActionChange_BroadcastUpdate(): Broadcast -> ${isEnabled}`);
-  }
-
-  // public event_ToolBar_on_add_Event_BroadcastUpdate(event:RaceEvent) {
-  //   this._event_ToolBar_on_add_Event.next(event);
-  //   if(this._config.LoggingSettings.EventOracleService_Can_Log)
-  //     console.log(`EventOracle._event_ToolBar_on_add_Event(): Broadcasting new event -> ${JSON.stringify(event)}`);
-  // }
-
-  public event_card_onEdit_Event_BroadcastUpdate(event:RaceEvent) {
-    this._event_card_onEdit_Event.next(event);
-    if(this._config.LoggingSettings.EventOracleService_Can_Log)
-      console.log(`EventOracle.event_card_onEdit_Event_BroadcastUpdate(): Broadcasting cards wishes to be edited -> ${JSON.stringify(event)}`);
-  }
-
-  public event_toolBar_onUpdate_Event_BroadcastUpdate(event:RaceEvent) {
-    this._event_toolBar_onUpdate_Event.next(event);
-    if(this._config.LoggingSettings.EventOracleService_Can_Log)
-      console.log(`EventOracle.event_toolBar_onUpdate_Event_BroadcastUpdate(): Broadcasting updated touranment -> ${JSON.stringify(event)}`);
-  }
-
-  public event_card_onDelete_Event_BroadcastUpdate(event:RaceEvent) {
-    this.eventsToDelete.push(event);
-    this._event_card_onDelete_Event.next(event);
-    if(this._config.LoggingSettings.EventOracleService_Can_Log)
-      console.log(`EventOracle.event_card_onDelete_Event_BroadcastUpdate(): Broadcasting deleted touranment -> ${JSON.stringify(event)}`);
-  }
-
-  // public event_toolBar_onDelete_EventList_BroadcastUpdate(event:RaceEvent[]) {
-  //   this.removefromList(event);
-  //   this._event_toolBar_onDelete_EventList.next(event);
-  //   if(this._config.LoggingSettings.EventOracleService_Can_Log)
-  //     console.log(`EventOracle.event_toolBar_onDelete_EventList_BroadcastUpdate(): Broadcasting deleted touranment list-> ${JSON.stringify(event)}`);
-  // }
+   currentList.push(event);
+   this.eventsToDelete$.next(currentList);
+   this.currentEditingAction$.next(Constants.toolbar_button_delete_action);
+ }
 
   removefromList(list:RaceEvent[]){
     var index;
@@ -128,27 +129,32 @@ export class EventOracleService  {
     }
   }
 
+
+  /**
+* @ngdoc function
+* @name loadTournaments
+* @methodOf Events Oracle Service
+* @normallyExecutedBy The Oracle himeself, in his constructor.
+* @description Loads all the required events, then broadcasts an updated version of it's self for binding
+* @param NONE
+* @returns void
+*/
   loadEvents(){
 
-    if(this._config.LoggingSettings.EventOracleService_Can_Log)
-      console.log(`EventOracle.pleaseGetMeGetAllEvents(): Requesting all events...`);
-
-    this._service.GetAllEvents()
+        this._service.GetAllEvents()
                   .pipe(
                     tap(dbList=>{
                       if(this._config.LoggingSettings.EventOracleService_Can_Log)
                         console.log(`EventOracle.pleaseGetMeGetAllEvents().tap(): Setting The Oracles list with the result -> ${JSON.stringify(dbList)}`);
-                        //this.events = dbList;
-                    }),
+                   }),
                     finalize(()=>{
                       if(this._config.LoggingSettings.EventOracleService_Can_Log)
                         console.log(`EventOracle.pleaseGetMeGetAllEvents().finalize(): Requesting all events complete`);
                     }),
-                    catchError( val =>{ 
-                      var msg:String;
-                      msg = "*** \nEvent Oracle CAUGHT sleeping on the job ";
-                      console.error(`EventOracle.pleaseGetMeGetAllEvents().catchError(): !!! ERROR !!! -> ${msg}\n***`);
-                      return of(`${msg}: ${val}`)
+                    catchError( error =>{ 
+                      var msg = "*** EventOracle.pleaseGetMeGetAllEvents().catchError(): \nEvent Oracle CAUGHT sleeping on the job ***\n";
+                      console.error(`${msg} : ${error}`);
+                      return of(`${msg} : ${error}`)
                     })
 
                   ).subscribe(list=>{
@@ -162,21 +168,24 @@ export class EventOracleService  {
 
   }
 
-  pleaseAddAEvent(data:RaceEvent):Observable<any>{
 
-    if(this._config.LoggingSettings.EventOracleService_Can_Log)
-      console.log(`EventOracle.pleaseAddAEvents(): Adding 1 event -> ${data}`);
+  /**
+* @ngdoc function
+* @name pleaseAddAEvent
+* @methodOf Event Oracle Service
+* @normallyExecutedBy The "Event Tool Bar" component
+* @description Inserts an Event into the databse 
+* @param {data=} RaceEvent
+* @returns Event
+*/
+  pleaseAddAEvent(data:RaceEvent){
 
-    return this._service.PostAEvent(data)
+    this._service.PostAEvent(data)
                   .pipe(
-                    tap(event =>{
-
+                    tap(event => {
                       if(event){
                         if(this._config.LoggingSettings.EventOracleService_Can_Log)
                           console.log(`EventOracle.pleaseAddAEvent().tap(): Event added to db, about to add it to Oracle list and then broadcast updated list with new Event-> ${JSON.stringify(event)}`);
-                        var list:RaceEvent[] = this.events$.getValue();
-                        list.push(event);
-                        this.events$.next(list);
                       }
                       else
                         console.warn(`EventOracle.pleaseAddAEvent().tap(): Result is fucked. DB insert probably failed`);
@@ -193,16 +202,35 @@ export class EventOracleService  {
                       return of(`${msg}: ${val}`)
                     })
 
-                  );
+                  ).subscribe(event => {
+                    if(event){
+                        // Add new event to orcale list
+                        var list:RaceEvent[] = this.events$.getValue();
+                        list.push(event);
+
+                        // Broadcast updated list of tournaments
+                        this.events$.next(list);
+                        if(this._config.LoggingSettings.EventOracleService_Can_Log)
+                          console.log(`EventOracle.pleaseAddAEvent().subscribe() : Added event to Oracle list and then broadcasted updated list -> ${JSON.stringify(list)}`);
+                      }
+                      else
+                        console.warn(`EventOracle.pleaseAddAEvent().subscribe(): Result is fucked. DB insert probably failed, check them logs playa`);                    
+               });
 
   }
 
-  pleaseUpdateAEvent(data:RaceEvent):Observable<any>{
+/**
+* @ngdoc function
+* @name pleaseUpdateAEvent
+* @methodOf Event Oracle Service
+* @normallyExecutedBy The "Event Tool Bar" component
+* @description Updates a Event in the databse 
+* @param {action=} Event
+* @returns {RaceEvent}
+*/
+  pleaseUpdateAEvent(data:RaceEvent){
 
-    if(this._config.LoggingSettings.EventOracleService_Can_Log)
-      console.log(`EventOracle.pleaseUpdateAEvent(): Updating 1 event -> ${data}`);
-
-    return this._service.UpdateEvent(data)
+       this._service.UpdateEvent(data)
                   .pipe(
                     tap(result=>{
                       if(this._config.LoggingSettings.EventOracleService_Can_Log)
@@ -211,7 +239,7 @@ export class EventOracleService  {
                     finalize(()=>{
                       if(this._config.LoggingSettings.EventOracleService_Can_Log)
                         console.log(`EventOracle.pleaseUpdateAEvent().finalize(): Request to Update the event is complete. About to broadcast the UPDATED event -> ${JSON.stringify(data)}`);
-                        this.event_toolBar_onUpdate_Event_BroadcastUpdate(data);
+                        
                     }),
                     catchError( val =>{ 
                       var msg:String;
@@ -220,16 +248,43 @@ export class EventOracleService  {
                       return of(`${msg}: ${val}`)
                     })
 
-                  );
+                  ).subscribe(event => {
+
+                    // update orcale event (after sucessfull delete)
+                    if(event){
+                      var list:RaceEvent[] = this.events$.getValue();
+                      list.forEach(element => {
+                        if(element.eventID == event.eventID)
+                            element.eventName = event.eventName;
+                      });
+
+                      // braoadcast update
+                      this.events$.next(list);
+                      if(this._config.LoggingSettings.TournamentOracleService_Can_Log)
+                        console.log(`EventOracle.pleaseUpdateEvent().subscribe() : Updated event it to Oracle list and then broadcasted updated list -> ${JSON.stringify(list)}`);
+                    }
+                    else
+                      console.warn(`EventOracle.pleaseUpdatedEvent().tap(): Result is fucked. DB insert probably failed`);                    
+                });
 
   }
 
-  pleaseDeleteTheseEvents(data:RaceEvent[]):Observable<any>{
+
+  /**
+* @ngdoc function
+* @name pleaseDeleteTheseEvents
+* @methodOf Event Oracle Service
+* @normallyExecutedBy The "Event Tool Bar" component
+* @description Deletes mnultiple Events in the databse at once
+* @param {action=} Event
+* @returns {Event}
+*/
+  pleaseDeleteTheseEvents(data:RaceEvent[]){
 
     if(this._config.LoggingSettings.EventOracleService_Can_Log)
       console.log(`EventOracle.pleaseUpdateAEvent(): Updating 1 event -> ${data}`);
 
-    return this._service.DeleteEventList(data)
+      this._service.DeleteEventList(data)
                   .pipe(
                     tap(result=>{
                       debugger;
@@ -252,7 +307,22 @@ export class EventOracleService  {
                       return of(`${msg}: ${val}`)
                     })
 
-                  );
+                  ).subscribe(result => {
+                    var list = this.events$.getValue();
+                    var deleteList = [];
+                    var index;
+
+                    // loop delete list and remove each item from the current list
+                    data.forEach(element => {
+                      index = list.indexOf(element);
+                      if(index >= 0)
+                        list.splice(index,1);
+                        // abouve action updates the actual list, thus updadting those already bound to it. need to confirm this officially
+                    });
+
+                    this.eventsToDelete$.next(deleteList);
+                  });
+
 
   }
 

@@ -1,6 +1,7 @@
 <div class="toolBar">
-    <mat-checkbox class="margin_x_5" (change)="onEnableToolBarEditingOptionsChanged($event.checked)"></mat-checkbox>
-    <span class="margin_x_5">Enabler Editing : </span>
+    <span class="margin_x_10"></span>
+    <mat-checkbox (change)="onEnableToolBarEditingOptionsChanged($event.checked)"></mat-checkbox>
+    <span class="margin_x_10">Enabler Editing : </span>
 
     <div class="addEdit" [@inOutAnimation] *ngIf="isEditingEnabled && (action != 'Delete') else loading">
       <div class="toolBarButtons margin_x_5">

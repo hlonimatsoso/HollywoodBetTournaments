@@ -29,7 +29,7 @@ export class Animations {
             ':enter', 
             [
               style({ height: 0, opacity: 0 }),
-              animate('2s ease-out', 
+              animate('1.5s ease-out', 
                       style({ height: '100%', opacity: 1 }))
             ]
           ),
@@ -37,7 +37,7 @@ export class Animations {
             ':leave', 
             [
               style({ height: '100%', opacity: 1 }),
-              animate('1.5s ease-out', 
+              animate('0.75s ease-out', 
                       style({ height: 0, opacity: 0 }))
             ]
           )

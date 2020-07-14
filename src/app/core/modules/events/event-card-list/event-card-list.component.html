@@ -5,7 +5,7 @@
 <app-event-card-tool-bar></app-event-card-tool-bar>
 
 <div *ngIf="!isEventListEmpty" class="eventsContainer">
-    <app-event-card class=".margin_X_5" *ngFor="let t of events" [event]="t" [enableEditing]="enableEditing"></app-event-card>
+    <app-event-card [@inOutAnimation] class=".margin_X_5" *ngFor="let t of events" [event]="t" [isEditingEnabled]="isEditingEnabled" [oracleDeleteList]="oracleDeleteList"></app-event-card>
 </div>
 
 <div *ngIf="isEventListEmpty" class="noContentToSee" #noContent>

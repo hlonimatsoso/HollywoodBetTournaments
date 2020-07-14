@@ -29,6 +29,7 @@ export class TournamentCardToolBarComponent implements OnInit {
   @Input() public isEditingEnabled:boolean;
 
   action:string;
+  
   _activeTournamentForEditing:Tournament;
   _tournamentName: FormControl;
 

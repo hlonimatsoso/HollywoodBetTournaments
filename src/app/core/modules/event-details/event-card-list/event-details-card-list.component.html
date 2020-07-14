@@ -4,11 +4,11 @@
 
 <app-event-card-tool-bar></app-event-card-tool-bar>
 
-<div *ngIf="!isEventListEmpty" class="eventsContainer">
-    <app-event-details-card class=".margin_X_5" *ngFor="let t of events" [eventDetails]="t" [enableEditing]="enableEditing"></app-event-details-card>
+<div *ngIf="!isEventDetailsListEmpty" class="eventsContainer">
+    <app-event-details-card class=".margin_X_5" *ngFor="let t of eventDetails" [eventDetail]="t" [isEditingEnabled]="isEditingEnabled"></app-event-details-card>
 </div>
 
-<div *ngIf="isEventListEmpty" class="noContentToSee" #noContent>
+<div *ngIf="isEventDetailsListEmpty" class="noContentToSee" #noContent>
     Div.Fokol...
 </div>
 

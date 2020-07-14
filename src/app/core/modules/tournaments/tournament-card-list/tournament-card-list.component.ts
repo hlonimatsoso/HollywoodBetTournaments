@@ -29,7 +29,10 @@ export class TournamentCardListComponent implements OnInit,OnDestroy {
   private _isToolBarEnabled$Subscrioption;
   private _tournamentsToDelete$Subscription;
 
-  constructor(private _ohGreatOracle:TournamentOracleService) { }
+  constructor(private _ohGreatOracle:TournamentOracleService) { 
+
+    //this.oracleDeleteList = [];
+  }
  
   ngOnInit(): void {
 

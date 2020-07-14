@@ -1,12 +1,13 @@
 import { Injectable, OnInit } from '@angular/core';
 import { EventDetailsService } from './event-details.service';
 import { EventDetail } from './../../shared/models/EventDetail';
-import {Subject,Observable, of} from 'rxjs';
+import {Subject,Observable, of, BehaviorSubject} from 'rxjs';
 import {ConfigService  } from '../../shared/services/config.service';
 import {map, tap,finalize,catchError } from 'rxjs/operators';
 import {EventDetailStatus} from '../../shared/models/EventDetailStatus';
 import {RaceEvent} from '../../shared/models/Event';
 import {EventOracleService} from '../events/event-oracle.service';
+import { Constants } from '../../shared/models/constants';
 
 
 @Injectable({
@@ -14,26 +15,22 @@ import {EventOracleService} from '../events/event-oracle.service';
 })
 export class EventDetailsOracleService implements OnInit {
 
-  private _event_details_ToolBar_on_Action_Change = new Subject<string>();
-  private _event_details_ToolBar_on_Enable_ToolBar_Editing_Options_Change = new Subject<boolean>();
-  private _event_details_ToolBar_on_add_Event = new Subject<EventDetail>();
-  private _event_details_card_onEdit_Event = new Subject<EventDetail>();
-  private _event_details_toolBar_onUpdate_Event = new Subject<EventDetail>();
-  private _event_details_card_onDelete_Event = new Subject<EventDetail>();
-  private _event_details_toolBar_onDelete_EventList = new Subject<EventDetail[]>();
+  ready$ = new BehaviorSubject(this);
+  eventDetails$ = new BehaviorSubject(null);
+  eventDetailsToDelete$ = new BehaviorSubject(null);
+  currentEditingAction$ = new BehaviorSubject(Constants.toolbar_button_add_action);
+  currentEditingEventDetail$ = new BehaviorSubject(null);
+  isToolBarEnabled$ = new BehaviorSubject(false);
+  eventDetailStatuses$ = new BehaviorSubject(null);
+
 
   
   
   constructor(private _service:EventDetailsService,private _eventsOracle:EventOracleService, private _config:ConfigService) {
+    console.log(`EventOracle.constructor() : Loading events...`);
+    this.availableStatuses = this.getAvailableStatuses();
+    this.loadEventDetails();
     this.eventDetailsToDelete = [];
-    //this.currentEvents = this._eventsOracle.events;
-    this._eventsOracle.ready$.subscribe(oracle => {
-      this.events = oracle.events$.getValue();
-    })
-    
-     _service.GetAllEventDetailStatuses().subscribe((x)=>{
-      this.availableStatuses = x;
-     });
   }
   
   ngOnInit(): void {
@@ -49,82 +46,7 @@ export class EventDetailsOracleService implements OnInit {
   events:RaceEvent[]
 
 
-  get event_details_ToolBar_onActionChange$(): Observable<string> {
-    return this._event_details_ToolBar_on_Action_Change.asObservable();
-  }
-
-  get event_details_ToolBar_on_Enable_ToolBar_Editing_Options_Change$(): Observable<boolean> {
-    return this._event_details_ToolBar_on_Enable_ToolBar_Editing_Options_Change.asObservable();
-  }
-
-  get event_details_ToolBar_on_add_Event$(): Observable<EventDetail> {
-    return this._event_details_ToolBar_on_add_Event.asObservable();
-  }
-
-  get event_details_card_on_edit_Event$(): Observable<EventDetail> {
-    return this._event_details_card_onEdit_Event.asObservable();
-  }
-
-  get event_details_toolBar_onUpdate_Event$(): Observable<EventDetail> {
-    return this._event_details_toolBar_onUpdate_Event.asObservable();
-  }
-
-  get event_details_card_onDelete_Event$(): Observable<EventDetail> {
-    return this._event_details_card_onDelete_Event.asObservable();
-  }
-
-  get event_details_toolBar_onDelete_EventList$(): Observable<EventDetail[]> {
-    return this._event_details_toolBar_onDelete_EventList.asObservable();
-  }
-
-
-  public event_details_toolBar_onActionChange_BroadcastUpdate(action:string) {
-    this._event_details_ToolBar_on_Action_Change.next(action);
-    if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
-      console.log(`EventDetailOracle.event_details_toolBar_onActionChange_BroadcastUpdate(): Broadcast -> ${action}`);
-  }
-
-  public event_details_toolBar_onEnableToolBarEditingOptions_Change_BroadcastUpdate(isEnabled:boolean) {
-    this._event_details_ToolBar_on_Enable_ToolBar_Editing_Options_Change.next(isEnabled);
-    if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
-      console.log(`EventDetailOracle.event_details_toolBar_onActionChange_BroadcastUpdate(): Broadcast -> ${isEnabled}`);
-  }
-
-  public event_details_toolBar_on_add_Event_BroadcastUpdate(event:EventDetail) {
-    this._event_details_ToolBar_on_add_Event.next(event);
-    if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
-      console.log(`EventDetailOracle._event_details_toolBar_on_add_Event(): Broadcasting new event -> ${JSON.stringify(event)}`);
-  }
-
-  public event_details_card_onEdit_Event_BroadcastUpdate(event:EventDetail) {
-    this._event_details_card_onEdit_Event.next(event);
-    if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
-      console.log(`EventDetailOracle.event_card_onEdit_Event_BroadcastUpdate(): Broadcasting cards wishes to be edited -> ${JSON.stringify(event)}`);
-  }
-
-  public event_details_toolBar_onUpdate_Event_BroadcastUpdate(event:EventDetail) {
-    this._event_details_toolBar_onUpdate_Event.next(event);
-    if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
-      console.log(`EventDetailOracle.event_details_toolBar_onUpdate_Event_BroadcastUpdate(): Broadcasting updated touranment -> ${JSON.stringify(event)}`);
-  }
-
-  public event_deatils_card_onDelete_Event_BroadcastUpdate(event:EventDetail) {
-    this.eventDetailsToDelete.push(event);
-    this._event_details_card_onDelete_Event.next(event);
-    if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
-      console.log(`EventDetailOracle.event_card_onDelete_Event_BroadcastUpdate(): Broadcasting deleted touranment -> ${JSON.stringify(event)}`);
-  }
-
-  public event_details_toolBar_onDelete_EventList_BroadcastUpdate(event:EventDetail[]) {
-    this.removefromList(event);
-    this._event_details_toolBar_onDelete_EventList.next(event);
-    if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
-      console.log(`EventDetailOracle.event_details_toolBar_onDelete_EventList_BroadcastUpdate(): Broadcasting deleted touranment list-> ${JSON.stringify(event)}`);
-  }
-
-
-
-  removefromList(list:EventDetail[]){
+ removefromList(list:EventDetail[]){
     var index;
     for (var t of list) {
       
@@ -136,57 +58,128 @@ export class EventDetailsOracleService implements OnInit {
     }
   }
 
-  get getAvailableStatuses():EventDetailStatus[]{
+   getAvailableStatuses():EventDetailStatus[]{
     var result:EventDetailStatus[] = [];
-    this._service.GetAllEventDetailStatuses().subscribe((x)=>{result = x;});
-  
-    return result;
-  }
-
-  get getCurrentEvents():RaceEvent[]{
-    var result:RaceEvent[] = [];
-    result = this._eventsOracle.currentEvents;
-
-    return result;
-  }
-
-  getAllEventDetailStatuses(){
+    this._service.GetAllEventDetailStatuses().subscribe(
+      (x)=>{
+        this.eventDetailStatuses$.next(x)}
+      );
+    result = this.eventDetailStatuses$.getValue();
     
+    return result;
   }
 
-  pleaseGetMeGetAllEvents():Observable<EventDetail[]>{
+  // get getCurrentEvents():RaceEvent[]{
+  //   var result:RaceEvent[] = [];
+  //   result = this._eventsOracle.currentEvents;
+
+  //   return result;
+  // }
+
+/**
+* @ngdoc function
+* @name onCurrentActionChange
+* @methodOf Event Detail Oracle Service
+* @normallyExecutedBy The "Event Detail Tool Bar" component
+* @description Broadcasts the change of the Action state of the Oracle.
+* @param {action=} string Either "Add", "Edit" or "Delete"
+* @returns {void} no return
+*/
+onCurrentActionChange(action:string){
+  this.currentEditingAction$.next(action);
+  if(action == Constants.toolbar_button_add_action)
+    this.currentEditingAction$.next(Constants.toolbar_button_add_action);
+}
+
+
+/**
+* @ngdoc function
+* @name setCurrentEditingEventDetails
+* @methodOf EventDetails Oracle Service
+* @normallyExecutedBy The "EventDetails Card" component
+* @description Sets EventDetails for editing, and eventually to be updated
+* @param {EventDetails=} EventDetails EventDetails to mark for editing
+* @returns {void} no return
+*/
+setCurrentEditingEventDetail(eventDetail:EventDetail){
+  this.currentEditingEventDetail$.next(eventDetail);
+  this.currentEditingAction$.next(Constants.toolbar_button_edit_action);
+}
+
+
+/**
+* @ngdoc function
+* @name addToEventDetailsDeleteList
+* @methodOf EventDetails Oracle Service
+* @normallyExecutedBy The "Event Details Card" component
+* @description Soft deletes an item on the screen before the db update
+* @param {list=} EventDetails EventDetails to mark for deletion
+* @returns {void} no return
+*/
+addToEventDEtailsDeleteList(item:EventDetail){
+  var currentList:EventDetail[] = this.eventDetailsToDelete$.getValue();
+   
+   if(!currentList)
+     currentList = [];
+
+   currentList.push(item);
+   this.eventDetailsToDelete$.next(currentList);
+   this.currentEditingAction$.next(Constants.toolbar_button_delete_action);
+ }
+
+
+
+/**
+* @ngdoc function
+* @name onIsToolBarEnabledChange
+* @methodOf Event Detail Oracle Service
+* @normallyExecutedBy The "Event Detail Tool Bar" component
+* @description Broadcasts the change of the Event Detail ToolBar's "On" & "Off" state
+* @param {action=} string Either "Add", "Edit" or "Delete"
+* @returns {void} no return
+*/
+onIsToolBarEnabledChange(flag:boolean){
+  this.isToolBarEnabled$.next(flag);
+}
+
+  loadEventDetails(){
 
     if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
       console.log(`EventDetailOracle.pleaseGetMeGetAllEvents(): Requesting all events...`);
 
-    return this._service.GetAllEventDetails()
+    this._service.GetAllEventDetails()
                   .pipe(
                     tap(dbList=>{
                       if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
                         console.log(`EventDetailOracle.pleaseGetMeGetAllEvents().tap(): Setting The Oracles list with the result -> ${JSON.stringify(dbList)}`);
-                        this.eventDetails = dbList;
                     }),
                     finalize(()=>{
                       if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
                         console.log(`EventDetailOracle.pleaseGetMeGetAllEvents().finalize(): Requesting all events complete`);
                     }),
-                    catchError( val =>{ 
-                      var msg:String;
-                      msg = "*** \nEvent Oracle CAUGHT sleeping on the job ";
-                      console.error(`EventDetailOracle.pleaseGetMeGetAllEvents().catchError(): !!! ERROR !!! -> ${msg}\n***`);
-                      return of(`${msg}: ${val}`)
+                    catchError( error =>{ 
+                      var msg = "*** EventDetailOracle.pleaseGetMeGetAllEvents().catchError(): \nEvent Oracle CAUGHT sleeping on the job ***\n";
+                      console.error(`${msg} : ${error}`);
+                      return of(`${msg} : ${error}`)
                     })
 
-                  );
+                  ).subscribe(list=>{
+                  
+                    if(list){
+                      this.eventDetails$ = new BehaviorSubject(list);
+                      this.ready$.next(this);
+                      console.log(`EventsOracle.loadEvents().subscribe() : Events Oracle is now ready, events list defaulted to -> ${JSON.stringify(list)}`);
+                    }
+                  });
 
   }
 
-  pleaseAddAEvent(data:EventDetail):Observable<any>{
+  pleaseAddAEventDEtail(data:EventDetail){
 
     if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
       console.log(`EventDetailOracle.pleaseAddAEvents(): Adding 1 event -> ${data}`);
 
-    return this._service.PostAEventDetail(data)
+    this._service.PostAEventDetail(data)
                   .pipe(
                     tap(dbList=>{
                       if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
@@ -195,25 +188,59 @@ export class EventDetailsOracleService implements OnInit {
                     finalize(()=>{
                       if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
                         console.log(`EventDetailOracle.pleaseAddAEvent().finalize(): Request to Add a event is complete. About to broadcast new event -> ${JSON.stringify(data)}`);
-                        this.event_details_toolBar_on_add_Event_BroadcastUpdate(data);
+                   }),
+                    catchError( error => { 
+                      debugger; 
+                      var msg = "*** EventDetailOracle.pleaseGetMeGetAllEvents().catchError(): \nEvent Oracle CAUGHT sleeping on the job ***\n";
+                      console.error(`${msg} : ${error}`);
+                      return of(`${msg} : ${error}`)
+                    })
+
+                  ).subscribe(horseResult => {
+                    if(horseResult){
+                        // Add new horse to orcale list
+                        var list:EventDetail[] = this.eventDetails$.getValue();
+                        list.push(horseResult);
+
+                        // Broadcast updated list of horses
+                        this.eventDetails$.next(list);
+                        if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
+                          console.log(`EventDetailsOracle.pleaseAddAEventDetails().subscribe() : Added EventDetails to Oracle list and then broadcasted updated list -> ${JSON.stringify(list)}`);
+                      }
+                      else
+                        console.warn(`EventDetailsOracle.pleaseAddAEventDetails().subscribe(): Result is fucked. DB insert probably failed, check them logs playa`);                    
+               });
+
+  }
+
+  pleaseUpdateAEventDetails(data:EventDetail){
+
+      this._service.UpdateEventDetail(data)
+                  .pipe(
+                    tap(result => {
+                      if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
+                        console.log(`EventDetailOracle.pleaseUpdateAEvent().tap(): Result if any -> ${JSON.stringify(result)}`);
                     }),
-                    catchError( val =>{ 
-                      var msg:String;
-                      msg = "*** \nEvent Oracle CAUGHT sleeping on the job ";
-                      console.error(`EventDetailOracle.pleaseAddAEvent().catchError(): !!! ERROR !!! -> ${msg}\n***`);
-                      return of(`${msg}: ${val}`)
+                    finalize(() => {
+                      if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
+                        console.log(`EventDetailOracle.pleaseUpdateAEvent().finalize(): Request to Update the event is complete. About to broadcast the UPDATED event -> ${JSON.stringify(data)}`);
+                    }),
+                    catchError( error => { 
+                      var msg = "*** EventDetailOracle.pleaseGetMeGetAllEvents().catchError(): \nEvent Oracle CAUGHT sleeping on the job ***\n";
+                      console.error(`${msg} : ${error}`);
+                      return of(`${msg} : ${error}`)
                     })
 
                   );
 
   }
 
-  pleaseUpdateAEvent(data:EventDetail):Observable<any>{
+  pleaseDeleteTheseEventDetails(data:EventDetail[]){
 
     if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
       console.log(`EventDetailOracle.pleaseUpdateAEvent(): Updating 1 event -> ${data}`);
 
-    return this._service.UpdateEventDetail(data)
+   this._service.DeleteEventDetailList(data)
                   .pipe(
                     tap(result=>{
                       if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
@@ -222,43 +249,21 @@ export class EventDetailsOracleService implements OnInit {
                     finalize(()=>{
                       if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
                         console.log(`EventDetailOracle.pleaseUpdateAEvent().finalize(): Request to Update the event is complete. About to broadcast the UPDATED event -> ${JSON.stringify(data)}`);
-                        this.event_details_toolBar_onUpdate_Event_BroadcastUpdate(data);
                     }),
-                    catchError( val =>{ 
-                      var msg:String;
-                      msg = "*** \nEvent Oracle CAUGHT sleeping on the job ";
-                      console.error(`EventDetailOracle.pleaseUpdateAEvent().catchError(): !!! ERROR !!! -> ${msg}\n***`);
-                      return of(`${msg}: ${val}`)
+                    catchError( error =>{ 
+                      var msg = "*** EventDetailOracle.pleaseGetMeGetAllEvents().catchError(): \nEvent Oracle CAUGHT sleeping on the job ***\n";
+                      console.error(`${msg} : ${error}`);
+                      return of(`${msg} : ${error}`)
                     })
 
-                  );
-
-  }
-
-  pleaseDeleteTheseEvents(data:EventDetail[]):Observable<any>{
-
-    if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
-      console.log(`EventDetailOracle.pleaseUpdateAEvent(): Updating 1 event -> ${data}`);
-
-    return this._service.DeleteEventDetailList(data)
-                  .pipe(
-                    tap(result=>{
-                      if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
-                        console.log(`EventDetailOracle.pleaseUpdateAEvent().tap(): Result if any -> ${JSON.stringify(result)}`);
-                    }),
-                    finalize(()=>{
-                      if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
-                        console.log(`EventDetailOracle.pleaseUpdateAEvent().finalize(): Request to Update the event is complete. About to broadcast the UPDATED event -> ${JSON.stringify(data)}`);
-                        this.event_details_toolBar_onDelete_EventList_BroadcastUpdate(data);
-                    }),
-                    catchError( val =>{ 
-                      var msg:String;
-                      msg = "*** \nEvent Oracle CAUGHT sleeping on the job ";
-                      console.error(`EventDetailOracle.pleaseUpdateAEvent().catchError(): !!! ERROR !!! -> ${msg}\n***`);
-                      return of(`${msg}: ${val}`)
-                    })
-
-                  );
+                  ).subscribe(list=>{
+                  
+                    if(list){
+                      this.eventDetails$ = new BehaviorSubject(list);
+                      this.ready$.next(this);
+                      console.log(`EventDetailsOracle.loadEvents().subscribe() : Events Oracle is now ready, events list defaulted to -> ${JSON.stringify(list)}`);
+                    }
+                  });
 
   }
 

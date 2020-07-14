@@ -1,14 +1,14 @@
 <div class="toolBar">
     <mat-checkbox (change)="onEnableToolBarEditingOptionsChanged($event.checked)"></mat-checkbox>
     <span class="margin_x_5">Enabler Editing</span>
-    <div class="toolBarButtons margin_x_5" *ngIf="enableEditing">
+    <div class="toolBarButtons margin_x_5" *ngIf="isEditingEnabled">
         <mat-button-toggle-group (change)="onActionChange($event)">
             <mat-button-toggle value="Add">Add</mat-button-toggle>
             <mat-button-toggle disabled value="Edit">Edit</mat-button-toggle>
             <mat-button-toggle value="Delete">Delete</mat-button-toggle>
           </mat-button-toggle-group>
     </div>
-     <div *ngIf="enableEditing && (action != 'Delete')">
+     <div *ngIf="isEditingEnabled && (action != 'Delete')">
         <mat-form-field>
             <mat-label>Event Detail Name</mat-label>
             <input #name matInput placeholder="Lucky Number Sleven" [formControl]="_eventDetailName" required>
@@ -26,7 +26,7 @@
           <mat-label>Event to register under</mat-label>
           <mat-select [formControl]="_event" required>
             <mat-option>--</mat-option>
-            <mat-option *ngFor="let e of getEvents" [value]="e.eventID">
+            <mat-option *ngFor="let e of currentEventList" [value]="e.eventID">
               {{e.eventName}}
             </mat-option>
           </mat-select>
@@ -44,8 +44,8 @@
           <mat-label>Event Detail Status</mat-label>
           <mat-select [formControl]="_eventDetailStatus" required>
             <mat-option>--</mat-option>
-            <mat-option *ngFor="let e of getAllStatuses" [value]="e.eventID">
-              {{e.eventName}}
+            <mat-option *ngFor="let e of getAllStatuses" [value]="e.eventDetailStatusID">
+              {{e.eventDetailStatusName}}
             </mat-option>
           </mat-select>
           <mat-error *ngIf="_eventDetailStatus.hasError('required')">Please choose a valid status</mat-error>
@@ -60,7 +60,7 @@
 
         <mat-slide-toggle
         *ngIf="_finishingPosition.valid"
-        [formControl]="_finishingPosition">
+        [formControl]="_firstTimer">
           First time racing ?
         </mat-slide-toggle>
 
@@ -69,17 +69,17 @@
     
       </div>
 
-     <div class="chips" *ngIf="enableEditing && (action == 'Delete')">
+     <div class="chips" *ngIf="isEditingEnabled && (action == 'Delete')">
        <span>Deleting the following events:</span>
         <mat-chip-list>
-            <mat-chip selectable removable (removed)="remove(chip)" *ngFor="let chip of eventDeleteList" selected color="warn">
+            <mat-chip selectable removable (removed)="remove(chip)" *ngFor="let chip of eventDetailsDeleteList" selected color="warn">
               {{chip.eventName}}
               <mat-icon matChipRemove>cancel</mat-icon>
             </mat-chip>
         </mat-chip-list>
          
           
-        <button mat-button [disabled]="eventDeleteList.length == 0" (click)="deleteEvent()">{{selectedBUttonText}}</button>
+        <button mat-button [disabled]="eventDetailsDeleteList.length == 0" (click)="deleteEvent()">{{selectedBUttonText}}</button>
      </div>
         
 </div>

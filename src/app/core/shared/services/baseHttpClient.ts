@@ -66,16 +66,17 @@ export abstract class BaseHttpClient extends LoggingRules{
           var result = this._http.post<any>(url,data, this._httpOptions)
           .pipe(
             tap((result)=>{ 
-                if(this._loggingRules.BaseHttpClient_Post_Can_Log)
+              if(this._loggingRules.BaseHttpClient_Post_Can_Log)
                     console.log(`BaseHttpClient.Post().Tap(): Result -> ` + JSON.stringify(result)); 
 
             }),
             finalize(()=>{
-                if(this._loggingRules.BaseHttpClient_Post_Can_Log)
-                    console.log(`BaseHttpClient.Post().finalize(): HTTP POST request complete.`);
-                    this._messageBus.httpRequest_InProgess_BroadcastUpdate(false);
+              this._messageBus.httpRequest_InProgess_BroadcastUpdate(false);
+              if(this._loggingRules.BaseHttpClient_Post_Can_Log)
+                console.log(`BaseHttpClient.Post().finalize(): HTTP POST request complete.`);
             }),
             catchError( error =>{ 
+                this._messageBus.httpRequest_InProgess_BroadcastUpdate(false);
                 var msg:String;
                 msg = "*** \nHTTP client CAUGHT sleeping on the job ";
                 console.error(`BaseHttpClient.Post()._http.Post.catchError(): CAUGHT '${url}' with ${JSON.stringify(data)} ERROR -> ${msg}\n***`);
@@ -83,6 +84,7 @@ export abstract class BaseHttpClient extends LoggingRules{
               })
           );
     
+
           return result;
       }
 

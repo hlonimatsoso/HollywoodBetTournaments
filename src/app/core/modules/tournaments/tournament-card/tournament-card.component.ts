@@ -2,6 +2,8 @@ import { Component, OnInit,Input, OnDestroy } from '@angular/core';
 import { Tournament } from '../../../shared/models/Tournament';
 import { TournamentOracleService } from '../tournament-oracle.service';
 import { Animations } from 'src/app/core/shared/models/Animations';
+import { RaceEvent } from 'src/app/core/shared/models/Event';
+import { EventOracleService } from '../../events/event-oracle.service';
 
 
 
@@ -13,16 +15,23 @@ import { Animations } from 'src/app/core/shared/models/Animations';
     Animations.fadeAnimation(null)
   ]
 })
-export class TournamentCardComponent{
+export class TournamentCardComponent implements OnInit{
 
   @Input() tournament: Tournament;
   @Input() isEditingEnabled:boolean;
   @Input() oracleDeleteList:Tournament[];
 
-  constructor(private _ohGreatOracle:TournamentOracleService) { }
+  events:RaceEvent[];
+
+  constructor(private _ohGreatOracle:TournamentOracleService,private _ohGreatEventOracle:EventOracleService) {
+    this.oracleDeleteList = [];
+    this.events = [];
+   }
+  ngOnInit(): void {
+      this.events = this._ohGreatOracle.getEventsForTournamentID(this.tournament.tournamentID);
+  }
 
   get isMarkedForDeletion(){
-
     if(!this.oracleDeleteList)
       return false;
 

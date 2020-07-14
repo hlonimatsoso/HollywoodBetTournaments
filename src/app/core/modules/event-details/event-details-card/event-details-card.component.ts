@@ -1,6 +1,9 @@
 import { Component, OnInit,Input } from '@angular/core';
 import { EventDetail } from '../../../shared/models/EventDetail';
 import { EventDetailsOracleService } from '../event-details-oracle.service';
+import { RaceEvent } from 'src/app/core/shared/models/Event';
+import { EventDetailStatus } from 'src/app/core/shared/models/EventDetailStatus';
+import { EventOracleService } from '../../events/event-oracle.service';
 
 
 
@@ -11,55 +14,36 @@ import { EventDetailsOracleService } from '../event-details-oracle.service';
 })
 export class EventDetailsCardComponent implements OnInit {
 
-  @Input() eventDetails: EventDetail;
-  @Input() enableEditing:boolean;
-  //_isEditing:boolean;
+  @Input() eventDetail: EventDetail;
+  @Input() isEditingEnabled:boolean;
+  @Input() oracleDeleteList:EventDetail[];
 
-  
+  event:RaceEvent;
+  status:EventDetailStatus;
 
   get isMarkedForDeletion(){
-    const index = this._ohGreatOracle.eventDetailsToDelete.findIndex(t => t.eventID == this.eventDetails.eventID);
+    const index = this._ohGreatOracle.eventDetailsToDelete.findIndex(t => t.eventDetailID == this.eventDetail.eventID);
 
     return index > -1;
   }
-  constructor(private _ohGreatOracle:EventDetailsOracleService) { }
+  constructor(private _ohGreatOracle:EventDetailsOracleService,
+              private _ohGreatEventOracle:EventOracleService) { }
 
   ngOnInit(): void {
+    this.event = this._ohGreatEventOracle.getEventByID(this.eventDetail.eventDetailID)
   }
 
   onEdit(eventArgument){
-    
-    console.log(`EventCard.onEdit(): Javascript event argument : ${JSON.stringify(eventArgument)}`);
-   
-    // var id:number = eventArgument.currentTarget.attributes.getNamedItem("data-eventID").value;
-    // var name:string = eventArgument.currentTarget.attributes.getNamedItem("data-eventName").value;
-    // var previouseEvent = new Event(id,name);
-
-    // console.log(`EventCard.onEdit(): Editing this Event : ${JSON.stringify(previouseEvent)}`);
-    
-    // this.event.eventID = id;
-    // this.event.eventName = name;
-    // var event = new Event(this.event.eventID,this.event.eventName);
-    
-    console.log(`EventCard.onEdit(): Editing this event -> ${JSON.stringify(this.eventDetails)}`);
-
-    this._ohGreatOracle.event_details_card_onEdit_Event_BroadcastUpdate(this.eventDetails);
+    console.log(`EventDetailsCard.onEdit(): Javascript event argument : ${JSON.stringify(eventArgument)}`);
+    this._ohGreatOracle.setCurrentEditingEventDetail(this.eventDetail);
   }
 
   onDelete(eventArgument){
    
-    console.log(`EventCard.onDelete(): Javascript event argument : ${JSON.stringify(eventArgument)}`);
-
-    var id:number = eventArgument.currentTarget.attributes.getNamedItem("data-eventID").value;
-    var name:string = eventArgument.currentTarget.attributes.getNamedItem("data-eventName").value;
-    //var event = new EventDetail(id,name);
-    // event.eventID = id;
-    // event.eventName = name;
-
-    console.log(`EventCard.onDelete(): Marking event for deletion -> ${JSON.stringify(this.eventDetails)}`);
-    this._ohGreatOracle.event_deatils_card_onDelete_Event_BroadcastUpdate(this.eventDetails);
-    //this._ohGreatOracle.event_toolBar_onActionChange_BroadcastUpdate("Delete");
-    //this._messageBus.eventCard_onDelete_BroadcastUpdate(event);
+    console.log(`TournamentCard.onDelete(): Javascript event argument : ${JSON.stringify(eventArgument)}`);
+    this._ohGreatOracle.addToEventDEtailsDeleteList(this.eventDetail);
   }
+
+  
 
 }

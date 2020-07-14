@@ -3,7 +3,7 @@ import { RaceEvent} from '../../../shared/models/Event';
 import {FormControl, Validators} from '@angular/forms';
 import {EventOracleService} from '../event-oracle.service';
 import {Constants} from '../../../shared/models/constants';
-import {map, tap,finalize,catchError } from 'rxjs/operators';
+import { tap,finalize,catchError } from 'rxjs/operators';
 import {of} from 'rxjs';
 import {ConfigService  } from '../../../shared/services/config.service';
 import {TournamentOracleService  } from '../../tournaments/tournament-oracle.service';
@@ -20,11 +20,11 @@ import {TournamentOracleService  } from '../../tournaments/tournament-oracle.ser
 })
 export class EventCardToolBarComponent implements OnInit {
 
-  @Input() public enableEditing:boolean;
+  @Input() public isEditingEnabled:boolean;
 
   action:string;
 
-  activeEventForEditing:RaceEvent;
+  _activeEventForEditing:RaceEvent;
 
   eventDeleteList:RaceEvent[];
 
@@ -40,54 +40,61 @@ export class EventCardToolBarComponent implements OnInit {
 
   _tournament = new FormControl('', [Validators.required]);
 
-  constructor(private _ohGreatOracle:EventOracleService,private _config:ConfigService, private _tournamentOracle:TournamentOracleService) { }
-
-  ngOnInit(): void {
+  constructor(private _ohGreatOracle:EventOracleService,private _config:ConfigService, private _tournamentOracle:TournamentOracleService) {
     this.eventDeleteList = [];
+   }
+  ngOnInit(): void {
+
     
-    this._ohGreatOracle.event_card_on_edit_Event$.subscribe((event)=>{
-    
-      this.activeEventForEditing = event;
-      this._eventName.setValue(this.activeEventForEditing.eventName);
-      this._eventNumber.setValue(this.activeEventForEditing.eventNumber);
-      this._eventDate.setValue(this.activeEventForEditing.eventDateTime);
-      this._eventEndDate.setValue(this.activeEventForEditing.eventDateTime);
-      this._tournament.setValue(this.activeEventForEditing.tournamentID);
-      this._autoClose.setValue(this.activeEventForEditing.autoClose);
+    this._eventName = new FormControl('', [Validators.required]);
 
+    this._ohGreatOracle.ready$.subscribe( oracle => {
 
-      this.onActionChange({"value":"Edit"});
+                              oracle.eventsToDelete$.subscribe( deleteList => {
+                                                          this.eventDeleteList = deleteList;
+                              });
+                              oracle.currentEditingAction$.subscribe( action => {
+                                                          this.action = action;
+                                                          if(action == "Add")
+                                                            this._eventName.setValue("");
+                              });
+                              oracle.currentEditingEvent$.subscribe( event => {
+                                                              if(event){
+                                                                this._activeEventForEditing = event;
+                                                                this._eventName.setValue(this._activeEventForEditing.eventName);
+                                                              }
+                              });
+                              oracle.isToolBarEnabled$.subscribe(flag => {
+                                                      this.isEditingEnabled = flag;
+                              });
     });
-
-    this._ohGreatOracle.event_card_onDelete_Event$.subscribe((event)=>{
-      this.activeEventForEditing = event;
-      this.eventDeleteList.push(event);
-      this.onActionChange({"value":"Delete"});
-    });
   }
 
-  onActionChange(event:any){
-    console.log(`EventCardToolBar.onActionChange() : Event -> ${event.value}`);
-    console.log(`EventCardToolBar.onActionChange() : Updating this.action to '${event.value}' and then broadcasting it via the Oracle`);
-    this.action = event.value;
-    //this._eventName.reset();
-    //debugger;
-    //this.nameField.nativeElement.focus();
+/**
+* @ngdoc function
+* @name onActionChange
+* @methodOf Tournament Oracle Service
+* @description Broadcasts the change of the Action state of the Tournament Toolbar.
+* @param {action=} string Either "Add", "Edit" or "Delete"
+* @returns {void} no return
+*/
+onActionChange(event:any){
+  this._ohGreatOracle.onCurrentActionChange(event.value);
+}
 
-    this._ohGreatOracle.event_toolBar_onActionChange_BroadcastUpdate(this.action);
-  }
+/**
+* @ngdoc function
+* @name onActionChange
+* @methodOf Tournament Oracle Service
+* @description Broadcasts the change of the Toolbars 'isToolBarEnabled' flag.
+* @param {action=} boolean
+* @returns {void} no return
+*/
+onEnableToolBarEditingOptionsChanged(event:boolean)
+{
+  this._ohGreatOracle.onIsToolBarEnabledChange(event);
+}
 
-  onEnableToolBarEditingOptionsChanged(event:boolean)
-  {
-    console.log(`EventCardToolBar.onEnableToolBarEditingOptionsChanged() : Event -> ${event}`);
-    console.log(`EventCardToolBar.onEnableToolBarEditingOptionsChanged() : Broadcasting event via The Great Oracle`);
-
-    this.enableEditing = event;
-    this._ohGreatOracle.event_ToolBar_onEnableToolBarEditingOptions_Change_BroadcastUpdate(event)
-
-    console.log(`EventCardToolBar.onEnableToolBarEditingOptionsChanged() : Change action to 'Add' as the default`);
-    this.onActionChange({"value":"Add"});
-  }
 
   get getEventNameValidationMessage() {
     if (this._eventName.hasError('required')) {
@@ -158,10 +165,10 @@ export class EventCardToolBarComponent implements OnInit {
       this.eventDeleteList.splice(index, 1);
     }
 
-    index = this._ohGreatOracle.eventsToDelete.indexOf(t);
+    index = this.eventDeleteList.indexOf(t);
 
         if (index >= 0) {
-          this._ohGreatOracle.eventsToDelete.splice(index, 1);
+          this.eventDeleteList.splice(index, 1);
         }
   }
 
@@ -187,66 +194,26 @@ export class EventCardToolBarComponent implements OnInit {
 
     const event = { } as RaceEvent;
     event.eventName = this._eventName.value;
+    event.eventNumber = this._eventNumber.value;
     event.tournamentID = this._tournament.value;
     event.autoClose = this._autoClose.value;
     event.eventDateTime = this._eventDate.value;
     event.eventEndDateTime = this._eventEndDate.value;
 
     this._ohGreatOracle.pleaseAddAEvent(event)
-        .pipe(
-          tap(result=>{
-            if(this._config.LoggingSettings.Events_ToolBar_Can_Log)
-              console.log(`EventCardToolBar.addEvent()._ohGreatOracle.pleaseAddAEvent.tap(): Result -> ${JSON.stringify(result)}`);
-          }),
-          finalize(()=>{
-            if(this._config.LoggingSettings.Events_ToolBar_Can_Log)
-              console.log(`EventCardToolBar.GetAllEvents()._ohGreatOracle.pleaseAddAEvent.finalize(): Add event request complete`);
-          }),
-          catchError( val =>{ 
-            var msg:String;
-            msg = "*** \nEvent Oracle CAUGHT sleeping on the job ";
-            console.error(`EventCardToolBar.GetAllEvents()._ohGreatOracle.pleaseAddAEvent.catchError(): !!! ERROR !!! -> ${msg}\n***`);
-            return of(`${msg}: ${val}`)
-          })
-        ).subscribe(resut=>{
-            // do something for the user 
-        });
+       
     }
 
   updateEvent(name:string){
-    var t = {} as RaceEvent;
+    var t = { } as RaceEvent;
     t.eventName = name;
-    t.eventID = this.activeEventForEditing.eventID;
+    t.eventID = this._activeEventForEditing.eventID;
 
     this._ohGreatOracle.pleaseUpdateAEvent(t)
-        .pipe(
-          tap(data => {
-            console.log(`EventCardToolBar.updateEvent()._ohGreatOracle.pleaseUpdateAEvent.tap(): Update event request complete`);
-            this._ohGreatOracle.event_toolBar_onUpdate_Event_BroadcastUpdate(t);
-          }),
-          catchError( val =>{ 
-            var msg:String;
-            msg = "*** \nEvent Oracle CAUGHT sleeping on the job ";
-            console.error(`EventCardToolBar.updateEvent()._ohGreatOracle.pleaseAddAEvent.catchError(): !!! ERROR !!! -> ${val}\n***`);
-            return of(`${msg}: ${val}`)
-          })
-        ).subscribe(result=>{
-          console.log('subscrfiption data:', result)
-
-        });
-  }
+   }
 
   deleteEvent(){
-    this._ohGreatOracle.pleaseDeleteTheseEvents(this.eventDeleteList)
-    .pipe(
-      finalize(()=>{
-        console.log(`Event Toolbar: eventToolBar_deleteEventList_sendUpdate: ${this.eventDeleteList}`);
-        //this._ohGreatOracle.event_toolBar_onDelete_EventList_BroadcastUpdate(this.eventDeleteList);
-        this.eventDeleteList = [];
-      })
-    )
-    .subscribe(o=>{
-      console.log(`Event Toolbar: Event service delete result: ${o}`);
-    });
+    this._ohGreatOracle.pleaseDeleteTheseEvents(this.eventDeleteList);
+    
   }
 }
