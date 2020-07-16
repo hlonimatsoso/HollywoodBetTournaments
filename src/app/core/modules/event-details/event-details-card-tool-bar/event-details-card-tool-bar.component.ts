@@ -9,6 +9,7 @@ import {ConfigService  } from '../../../shared/services/config.service';
 import {TournamentOracleService  } from '../../tournaments/tournament-oracle.service';
 import { EventOracleService } from '../../events/event-oracle.service';
 import { EventDetailStatus } from 'src/app/core/shared/models/EventDetailStatus';
+import { TheOracleService } from 'src/app/core/shared/services/the-oracle.service';
 //import { EventDetail } from 'src/app/core/shared/models/EventDetail';
 
 
@@ -33,6 +34,7 @@ export class EventDetailsCardToolBarComponent implements OnInit {
   eventDetailsDeleteList:EventDetail[];
   eventDetailStatuses:EventDetailStatus[];
 
+  _eventDetailID:Number;
 
   _eventDetailName = new FormControl('', [Validators.required]);
 
@@ -51,21 +53,21 @@ export class EventDetailsCardToolBarComponent implements OnInit {
 
   get getAllStatuses(){
 
-    var x = this._ohGreatOracle.eventDetailStatuses$.getValue();
+    var x = this._oracle.eventDetailsOracle.eventDetailStatuses$.getValue();
     return x;
   }
 
   get getEvents(){
 
-    return this._ohGreatOracle.events;
+    return this._oracle.eventDetailsOracle.events;
   }
 
-  constructor(private _ohGreatOracle:EventDetailsOracleService,private _config:ConfigService, private _eventOracle:EventOracleService) { }
+  constructor(private _oracle:TheOracleService,private _config:ConfigService) { }
 
   ngOnInit(): void {
     this._eventDetailName = new FormControl('', [Validators.required]);
 
-    this._ohGreatOracle.ready$.subscribe( oracle => {
+    this._oracle.eventDetailsOracle.ready$.subscribe( oracle => {
 
                               oracle.eventDetailsToDelete$.subscribe( deleteList => {
                                                           this.eventDetailsDeleteList = deleteList;
@@ -75,11 +77,10 @@ export class EventDetailsCardToolBarComponent implements OnInit {
                                                           // if(action == "Add")
                                                           //   this._tournamentName.setValue("");
                               });
-                              oracle.currentEditingEventDetail$.subscribe( ed => {
-                                                              if(ed){
-                                                                this._activeEventDetailForEditing = ed;
-                                                                this._eventDetailName.setValue(this._activeEventDetailForEditing.eventDetailName);
-                                                              }
+                              oracle.currentEditingEventDetail$.subscribe( horse => {
+                                                                if(horse)
+                                                                  this.fillControlsWithEventDetailsData(horse);
+                                                             
                               });
                               oracle.isToolBarEnabled$.subscribe(flag => {
                                                       this.isEditingEnabled = flag;
@@ -88,6 +89,18 @@ export class EventDetailsCardToolBarComponent implements OnInit {
                                 this.eventDetailStatuses = x;
                               });
     });
+  }
+  fillControlsWithEventDetailsData(horse: EventDetail) {
+    this._activeEventDetailForEditing = horse;
+    this._eventDetailID = this._activeEventDetailForEditing.eventDetailID;
+    this._event.setValue(this._activeEventDetailForEditing.eventID);
+    this._eventDetailName.setValue(this._activeEventDetailForEditing.eventDetailName);
+    this._eventDetailNumber.setValue(this._activeEventDetailForEditing.eventDetailNumber);
+    this._eventDetailOdd.setValue(this._activeEventDetailForEditing.eventDetailOdd);
+    this._eventDetailStatus.setValue(this._activeEventDetailForEditing.eventDetailStatusID);
+    this._finishingPosition.setValue(this._activeEventDetailForEditing.finishingPosition);
+    this._firstTimer.setValue(this._activeEventDetailForEditing.firstTimer);
+
   }
 /**
 * @ngdoc function
@@ -98,7 +111,7 @@ export class EventDetailsCardToolBarComponent implements OnInit {
 * @returns {void} no return
 */
 onActionChange(event:any){
-  this._ohGreatOracle.onCurrentActionChange(event.value);
+  this._oracle.eventDetailsOracle.onCurrentActionChange(event.value);
 }
 
 /**
@@ -111,7 +124,7 @@ onActionChange(event:any){
 */
 onEnableToolBarEditingOptionsChanged(event:boolean)
 {
-  this._ohGreatOracle.onIsToolBarEnabledChange(event);
+  this._oracle.eventDetailsOracle.onIsToolBarEnabledChange(event);
 }
 
   get getEventNameValidationMessage() {
@@ -175,7 +188,7 @@ onEnableToolBarEditingOptionsChanged(event:boolean)
   }
 
   get currentEventList(){
-    return this._eventOracle.events$.getValue();
+    return this._oracle.eventOracle.events$.getValue();
   }
 
   getErrorMessage() {
@@ -195,10 +208,10 @@ onEnableToolBarEditingOptionsChanged(event:boolean)
       this.eventDetailsDeleteList.splice(index, 1);
     }
 
-    index = this._ohGreatOracle.eventDetailsToDelete.indexOf(t);
+    index = this._oracle.eventDetailsOracle.eventDetailsToDelete.indexOf(t);
 
         if (index >= 0) {
-          this._ohGreatOracle.eventDetailsToDelete.splice(index, 1);
+          this._oracle.eventDetailsOracle.eventDetailsToDelete.splice(index, 1);
         }
   }
 
@@ -232,27 +245,24 @@ onEnableToolBarEditingOptionsChanged(event:boolean)
     event.eventDetailStatusID = this._eventDetailStatus.value;
 
 
-    this._ohGreatOracle.pleaseAddAEventDEtail(event);
+    this._oracle.eventDetailsOracle.pleaseAddAEventDEtail(event);
        
     }
 
   updateEvent(){
     var t = {} as EventDetail;
-    t.eventDetailName = this._activeEventDetailForEditing.eventDetailName;
-    t.eventDetailID = this._activeEventDetailForEditing.eventDetailID;
-    t.eventDetailStatusID = this._activeEventDetailForEditing.eventDetailStatusID;
-    t.eventID = this._activeEventDetailForEditing.eventID;
-    t.finishingPosition = this._activeEventDetailForEditing.finishingPosition;
-    t.eventDetailOdd = this._activeEventDetailForEditing.eventDetailOdd;
-    t.firstTimer = this._activeEventDetailForEditing.firstTimer;
+    t.eventDetailName = this._eventDetailName.value;
+    t.eventDetailID = this._eventDetailID;
+    t.eventDetailStatusID = this._eventDetailStatus.value;
+    t.eventID = this._event.value;
+    t.finishingPosition = this._finishingPosition.value;
+    t.eventDetailOdd = this._eventDetailOdd.value;
+    t.firstTimer = this._firstTimer.value;
 
-    this._ohGreatOracle.pleaseUpdateAEventDetails(t);
-
-
-    this._ohGreatOracle.pleaseUpdateAEventDetails(t);
+    this._oracle.eventDetailsOracle.pleaseUpdateAEventDetails(t);
   }
 
   deleteEvent(){
-    this._ohGreatOracle.pleaseDeleteTheseEventDetails(this.eventDetailsDeleteList);
+    this._oracle.eventDetailsOracle.pleaseDeleteTheseEventDetails(this.eventDetailsDeleteList);
   }
 }

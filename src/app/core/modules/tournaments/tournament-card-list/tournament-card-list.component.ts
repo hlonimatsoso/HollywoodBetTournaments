@@ -3,6 +3,7 @@ import { Tournament } from '../../../shared/models/Tournament';
 import { TournamentOracleService } from '../tournament-oracle.service';
 import { tap } from 'rxjs/operators';
 import { Animations } from 'src/app/core/shared/models/Animations';
+import { TheOracleService } from 'src/app/core/shared/services/the-oracle.service';
 
 
 /**
@@ -29,7 +30,7 @@ export class TournamentCardListComponent implements OnInit,OnDestroy {
   private _isToolBarEnabled$Subscrioption;
   private _tournamentsToDelete$Subscription;
 
-  constructor(private _ohGreatOracle:TournamentOracleService) { 
+  constructor(private _oracle:TheOracleService) { 
 
     //this.oracleDeleteList = [];
   }
@@ -38,7 +39,7 @@ export class TournamentCardListComponent implements OnInit,OnDestroy {
 
     console.log(`TournamentCardList.ngOnInit()._ohGreatOracle.ready$.subscribe() : Oracle data ready, binding to the folling streams: 'oracle.tournaments$', 'oracle.isToolBarEnabled$' and 'oracle.tournamentsToDelete$'`);
 
-    this._ready$Subscrioption = this._ohGreatOracle.ready$.subscribe( oracle => {
+    this._ready$Subscrioption = this._oracle.tournamentOracle.ready$.subscribe( oracle => {
 
                                 // Bind to oracles list of Tournaments
                                 this._tournaments$Subscrioption = oracle.tournaments$.subscribe( list => {

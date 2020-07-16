@@ -3,14 +3,14 @@ import { EventDetailStatus } from '../models/EventDetailStatus';
 
 
 export class EventDetail {
-    eventDetailID:number;
-    eventID:number;
+    eventDetailID:Number;
+    eventID:Number;
     event:RaceEvent;
-    eventDetailStatusID:number;
+    eventDetailStatusID:Number;
     eventDetailStatus:EventDetailStatus;
     eventDetailName:string;
-    eventDetailNumber:number;
-    eventDetailOdd:number;
-    finishingPosition:number;
+    eventDetailNumber:Number;
+    eventDetailOdd:Number;
+    finishingPosition:Number;
     firstTimer:boolean
 }

@@ -8,6 +8,7 @@ import {of} from 'rxjs';
 import {ConfigService  } from '../../../shared/services/config.service';
 import {trigger,state,transition,style,animate} from '@angular/animations'
 import { Animations } from 'src/app/core/shared/models/Animations';
+import { TheOracleService } from 'src/app/core/shared/services/the-oracle.service';
 
 
 /**
@@ -35,7 +36,7 @@ export class TournamentCardToolBarComponent implements OnInit {
 
   public tournamentDeleteList:Tournament[];
 
-  constructor(private _ohGreatOracle:TournamentOracleService,private _config:ConfigService) {
+  constructor(private _oracle:TheOracleService,private _config:ConfigService) {
     this.tournamentDeleteList = [];
   }
 
@@ -44,7 +45,7 @@ export class TournamentCardToolBarComponent implements OnInit {
     
     this._tournamentName = new FormControl('', [Validators.required]);
 
-    this._ohGreatOracle.ready$.subscribe( oracle => {
+    this._oracle.tournamentOracle.ready$.subscribe( oracle => {
 
                               oracle.tournamentsToDelete$.subscribe( deleteList => {
                                                           this.tournamentDeleteList = deleteList;
@@ -76,7 +77,7 @@ export class TournamentCardToolBarComponent implements OnInit {
 * @returns {void} no return
 */
   onActionChange(event:any){
-    this._ohGreatOracle.onCurrentActionChange(event.value);
+    this._oracle.tournamentOracle.onCurrentActionChange(event.value);
   }
 
 /**
@@ -89,7 +90,7 @@ export class TournamentCardToolBarComponent implements OnInit {
 */
   onEnableToolBarEditingOptionsChanged(event:boolean)
   {
-    this._ohGreatOracle.onIsToolBarEnabledChange(event);
+    this._oracle.tournamentOracle.onIsToolBarEnabledChange(event);
   }
 
 /**
@@ -154,22 +155,22 @@ export class TournamentCardToolBarComponent implements OnInit {
     }
 
     this._tournamentName.setValue("");
-    this._ohGreatOracle.onCurrentActionChange(Constants.toolbar_button_add_action)
+    this._oracle.tournamentOracle.onCurrentActionChange(Constants.toolbar_button_add_action)
   }
 
   addTournament(){
     const t = { } as Tournament;
     t.tournamentName = this._tournamentName.value;
-    this._ohGreatOracle.pleaseAddATournament(t);
+    this._oracle.tournamentOracle.pleaseAddATournament(t);
   }
 
   updateTournament(){
     var t = new Tournament(this._activeTournamentForEditing.tournamentID,this._tournamentName.value);
-    this._ohGreatOracle.pleaseUpdateATournament(t);
+    this._oracle.tournamentOracle.pleaseUpdateATournament(t);
   }
 
   deleteTournament(){
-    this._ohGreatOracle.pleaseDeleteTheseTournaments(this.tournamentDeleteList);
+    this._oracle.tournamentOracle.pleaseDeleteTheseTournaments(this.tournamentDeleteList);
   }
 
   removeDeleteChip(t: Tournament): void {
@@ -181,6 +182,6 @@ export class TournamentCardToolBarComponent implements OnInit {
     }
 
     if(this.tournamentDeleteList.length == 0)
-      this._ohGreatOracle.onCurrentActionChange(Constants.toolbar_button_add_action);
+      this._oracle.tournamentOracle.onCurrentActionChange(Constants.toolbar_button_add_action);
   }
 }

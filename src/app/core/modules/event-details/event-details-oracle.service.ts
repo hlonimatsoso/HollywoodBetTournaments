@@ -219,39 +219,58 @@ onIsToolBarEnabledChange(flag:boolean){
                   .pipe(
                     tap(result => {
                       if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
-                        console.log(`EventDetailOracle.pleaseUpdateAEvent().tap(): Result if any -> ${JSON.stringify(result)}`);
+                        console.log(`EventDetailOracle.pleaseDeleteTheseEventDetails().tap(): Result if any -> ${JSON.stringify(result)}`);
                     }),
                     finalize(() => {
                       if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
-                        console.log(`EventDetailOracle.pleaseUpdateAEvent().finalize(): Request to Update the event is complete. About to broadcast the UPDATED event -> ${JSON.stringify(data)}`);
+                        console.log(`EventDetailOracle.pleaseDeleteTheseEventDetails().finalize(): Request to Update the event is complete. About to broadcast the UPDATED event -> ${JSON.stringify(data)}`);
                     }),
                     catchError( error => { 
-                      var msg = "*** EventDetailOracle.pleaseGetMeGetAllEvents().catchError(): \nEvent Oracle CAUGHT sleeping on the job ***\n";
+                      var msg = "*** EventDetailOracle.pleaseDeleteTheseEventDetails().catchError(): \nEvent Oracle CAUGHT sleeping on the job ***\n";
                       console.error(`${msg} : ${error}`);
                       return of(`${msg} : ${error}`)
                     })
 
-                  );
+                  ).subscribe(horse => {
+                    // update orcale Event Detail (after sucessfull delete)
+                    if(horse){
+                      var list:EventDetail[] = this.eventDetails$.getValue();
+                      var index = list.findIndex( x =>  x.eventDetailID == horse.eventDetailID );
+                      list[index] = horse
+
+                      // list.forEach(element => {
+                      //   if(element.eventDetailID == horse.eventDetailID)
+                      //       element = horse;
+                      // });
+
+                      // braoadcast update
+                      this.eventDetails$.next(list);
+                      if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
+                        console.log(`EventDetailOracle.pleaseUpdateAEventDetails().subscribe() : Updated Event Details it to Oracle list and then broadcasted updated list -> ${JSON.stringify(list)}`);
+                    }
+                    else
+                      console.warn(`EventDetailOracle.pleaseUpdateAEventDetails().subscribe().EmptyReult(): Result is fucked. DB insert probably failed`);                    
+                });
 
   }
 
   pleaseDeleteTheseEventDetails(data:EventDetail[]){
 
     if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
-      console.log(`EventDetailOracle.pleaseUpdateAEvent(): Updating 1 event -> ${data}`);
+      console.log(`EventDetailOracle.pleaseDeleteTheseEventDetails(): Updating 1 event -> ${data}`);
 
    this._service.DeleteEventDetailList(data)
                   .pipe(
                     tap(result=>{
                       if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
-                        console.log(`EventDetailOracle.pleaseUpdateAEvent().tap(): Result if any -> ${JSON.stringify(result)}`);
+                        console.log(`EventDetailOracle.pleaseDeleteTheseEventDetails().tap(): Result if any -> ${JSON.stringify(result)}`);
                     }),
                     finalize(()=>{
                       if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
-                        console.log(`EventDetailOracle.pleaseUpdateAEvent().finalize(): Request to Update the event is complete. About to broadcast the UPDATED event -> ${JSON.stringify(data)}`);
+                        console.log(`EventDetailOracle.pleaseDeleteTheseEventDetails().finalize(): Request to Update the event is complete. About to broadcast the UPDATED event -> ${JSON.stringify(data)}`);
                     }),
                     catchError( error =>{ 
-                      var msg = "*** EventDetailOracle.pleaseGetMeGetAllEvents().catchError(): \nEvent Oracle CAUGHT sleeping on the job ***\n";
+                      var msg = "*** EventDetailOracle.pleaseDeleteTheseEventDetails().catchError(): \nEvent Oracle CAUGHT sleeping on the job ***\n";
                       console.error(`${msg} : ${error}`);
                       return of(`${msg} : ${error}`)
                     })
@@ -261,7 +280,7 @@ onIsToolBarEnabledChange(flag:boolean){
                     if(list){
                       this.eventDetails$ = new BehaviorSubject(list);
                       this.ready$.next(this);
-                      console.log(`EventDetailsOracle.loadEvents().subscribe() : Events Oracle is now ready, events list defaulted to -> ${JSON.stringify(list)}`);
+                      console.log(`EventDetailsOracle.pleaseDeleteTheseEventDetails().subscribe() : Events Oracle is now ready, events list defaulted to -> ${JSON.stringify(list)}`);
                     }
                   });
 

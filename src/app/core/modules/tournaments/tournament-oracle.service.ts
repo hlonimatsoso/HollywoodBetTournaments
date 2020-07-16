@@ -90,7 +90,11 @@ getTournamentByID(tournamentID:number):Tournament{
 * @returns RaceEvent[] 
 */
 getEventsForTournamentID(tournamentID:number):RaceEvent[]{
-  return this.allEvents$.getValue().filter( x => x.tournamentID == tournamentID);
+  var list = this.allEvents$.getValue();
+  if(list == null)
+    return null;
+
+  return list.filter( x => x.tournamentID == tournamentID);
 }
 
 /**
@@ -168,7 +172,6 @@ getEventsForTournamentID(tournamentID:number):RaceEvent[]{
 
                 ).subscribe(list=>{                  
                   if(list){
-                    debugger;
                     this.tournaments$ = new BehaviorSubject(list);
                     this.ready$.next(this);
                     this.tournaments$.next(list);

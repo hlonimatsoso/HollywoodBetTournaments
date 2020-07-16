@@ -4,6 +4,7 @@ import { TournamentOracleService } from '../tournament-oracle.service';
 import { Animations } from 'src/app/core/shared/models/Animations';
 import { RaceEvent } from 'src/app/core/shared/models/Event';
 import { EventOracleService } from '../../events/event-oracle.service';
+import { TheOracleService } from 'src/app/core/shared/services/the-oracle.service';
 
 
 
@@ -23,12 +24,12 @@ export class TournamentCardComponent implements OnInit{
 
   events:RaceEvent[];
 
-  constructor(private _ohGreatOracle:TournamentOracleService,private _ohGreatEventOracle:EventOracleService) {
+  constructor(private _oracle:TheOracleService) {
     this.oracleDeleteList = [];
     this.events = [];
    }
   ngOnInit(): void {
-      this.events = this._ohGreatOracle.getEventsForTournamentID(this.tournament.tournamentID);
+      this.events = this._oracle.tournamentOracle.getEventsForTournamentID(this.tournament.tournamentID);
   }
 
   get isMarkedForDeletion(){
@@ -45,7 +46,7 @@ export class TournamentCardComponent implements OnInit{
   onEdit(eventArgument){
 
     console.log(`TournamentCard.onEdit(): Javascript event argument : ${JSON.stringify(eventArgument)}`);
-    this._ohGreatOracle.setCurrentEditingTournament(this.tournament);
+    this._oracle.tournamentOracle.setCurrentEditingTournament(this.tournament);
 
   }
 
@@ -53,7 +54,7 @@ export class TournamentCardComponent implements OnInit{
   onDelete(eventArgument){
    
     console.log(`TournamentCard.onDelete(): Javascript event argument : ${JSON.stringify(eventArgument)}`);
-    this._ohGreatOracle.addToTournamentDeleteList(this.tournament);
+    this._oracle.tournamentOracle.addToTournamentDeleteList(this.tournament);
  }
 
 

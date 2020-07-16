@@ -5,6 +5,8 @@ import {Subject,Observable, of, BehaviorSubject} from 'rxjs';
 import {ConfigService  } from '../../shared/services/config.service';
 import {map, tap,finalize,catchError } from 'rxjs/operators';
 import { Constants } from '../../shared/models/constants';
+import { EventDetail } from '../../shared/models/EventDetail';
+import { EventDetailsOracleService } from '../event-details/event-details-oracle.service';
 
 
 
@@ -21,6 +23,7 @@ export class EventOracleService  {
  
   ready$ = new BehaviorSubject(this);
   events$ = new BehaviorSubject<RaceEvent[]>(null);
+  horses$ = new BehaviorSubject<EventDetail[]>(null);
   eventsToDelete$ = new BehaviorSubject(null);
   currentEditingAction$ = new BehaviorSubject(Constants.toolbar_button_add_action);
   currentEditingEvent$ = new BehaviorSubject(null);
@@ -30,6 +33,11 @@ export class EventOracleService  {
   constructor(private _service:EventService, private _config:ConfigService) {
     console.log(`EventOracle.constructor() : Loading events...`);
     this.loadEvents();
+    // this._ohGreatHorsesOracle.ready$.subscribe(orcale => {
+    //   orcale.eventDetails$.subscribe(horses => {
+    //     this.horses$.next(horses);
+    //   });
+    //});
   }
 
 
@@ -67,6 +75,23 @@ onCurrentActionChange(action:string){
     this.currentEditingAction$.next(Constants.toolbar_button_add_action);
 }
 
+  /**
+* @ngdoc function
+* @name getEventsForTournamentID
+* @methodOf Tournament Oracle Service
+* @normallyExecutedBy Those want a list of Events that belong to a particular tournament ID
+* @description Returns a list of Events with the argument ID
+* @param tournamentID Number
+* @returns RaceEvent[] 
+*/
+// getHorsesForEventID(eventID:number):EventDetail[]{
+//   var list = this.horses$.getValue();
+//   if(list == null)
+//     return null;
+
+//   return list.filter( x => x.eventID == eventID);
+// }
+
 
 /**
 * @ngdoc function
@@ -90,9 +115,8 @@ onIsToolBarEnabledChange(flag:boolean){
 * @param eventID Number
 * @returns Event 
 */
-getEventByID(eventID:number){
-  debugger;
-  return this.events$.getValue().find( x => x.eventID == eventID);
+getEventByID(eventID:Number){
+ return this.events$.getValue().find( x => x.eventID == eventID);
 }
 
 
@@ -130,7 +154,7 @@ addToEventDeleteList(event:RaceEvent){
   }
 
 
-  /**
+/**
 * @ngdoc function
 * @name loadTournaments
 * @methodOf Events Oracle Service

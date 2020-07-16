@@ -59,8 +59,7 @@ export class EventCardListComponent implements OnInit,OnDestroy {
 
                                 // Bind to oracles delete list
                                 this._eventsToDelete$Subscription =  oracle.eventsToDelete$.subscribe( list => {
-                                  debugger;
-                                                                          this.oracleDeleteList = list;
+                                                                        this.oracleDeleteList = list;
                                 });
     });
 

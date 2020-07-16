@@ -1,9 +1,9 @@
 import { Component, OnInit,Input } from '@angular/core';
 import { RaceEvent } from '../../../shared/models/Event';
-import { EventOracleService } from '../event-oracle.service';
-import { TournamentOracleService } from '../../tournaments/tournament-oracle.service';
 import { Tournament } from 'src/app/core/shared/models/Tournament';
-import { debug } from 'console';
+import { EventDetail } from 'src/app/core/shared/models/EventDetail';
+import { TheOracleService } from 'src/app/core/shared/services/the-oracle.service';
+import { BehaviorSubject } from 'rxjs';
 
 
 
@@ -18,6 +18,11 @@ export class EventCardComponent implements OnInit {
   @Input() isEditingEnabled:boolean;
   @Input() oracleDeleteList:RaceEvent[];
 
+  horses:EventDetail[];
+  horses$:BehaviorSubject<EventDetail[]> = new BehaviorSubject(null);
+  horseCount$:BehaviorSubject<number> = new BehaviorSubject(0);
+
+
   tournament:Tournament;
 
   get isMarkedForDeletion(){
@@ -27,24 +32,37 @@ export class EventCardComponent implements OnInit {
 
     return index > -1;
   }
-  constructor(private _ohGreatOracle:EventOracleService,private _ohGreatTournamentOracle:TournamentOracleService) {
+  constructor(private _oracle:TheOracleService) {
     this.oracleDeleteList = [];
    }
 
   ngOnInit(): void {
-    this.tournament = this._ohGreatTournamentOracle.getTournamentByID(this.event.tournamentID);
-    debugger;
+    this.tournament = this._oracle.tournamentOracle.getTournamentByID(this.event.tournamentID);
+    //this.horses = this._oracle.eventOracle.getHorsesForEventID(this.event.eventID);
+    this._oracle.eventDetailsOracle.ready$.subscribe(oracle => {
+      oracle.eventDetails$.subscribe(list => {
+        if(!list)
+          return null;
+          
+        var filteredList = list.filter( x => x.eventID == this.event.eventID)
+        this.horses$.next(filteredList);
+        this.horseCount$.next(filteredList.length);
+      });
+    });
+    this.horses$.subscribe(list => {
+      this.horses = list;
+    });
   }
 
   onEdit(eventArgument){
     
     console.log(`EventCard.onEdit(): Javascript event argument : ${JSON.stringify(eventArgument)}`);
-    this._ohGreatOracle.setCurrentEditingEvent(this.event);
+    this._oracle.eventOracle.setCurrentEditingEvent(this.event);
   }
 
   onDelete(eventArgument){
     console.log(`EventCard.onDelete(): Javascript event argument : ${JSON.stringify(eventArgument)}`);
-    this._ohGreatOracle.addToEventDeleteList(this.event);
+    this._oracle.eventOracle.addToEventDeleteList(this.event);
   }
 
 }

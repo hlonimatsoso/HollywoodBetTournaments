@@ -1,5 +1,5 @@
-<mat-card color="primary" class="card">
-    <mat-card-title matBadge="{{events.length}}" matBadgeColor="accent" color="primary">({{tournament.tournamentID}}) {{tournament.tournamentName}}</mat-card-title>
+<mat-card class="card">
+    <mat-card-title matBadge="{{events.length}}" matBadgeOverlap="false" color="accent">({{tournament.tournamentID}}) {{tournament.tournamentName}}</mat-card-title>
     <mat-card-subtitle color="primary">subtitle</mat-card-subtitle>
     <mat-card-content color="primary" *ngFor="let e of events">{{e.eventName}}</mat-card-content>
     <mat-card-actions color="primary">
