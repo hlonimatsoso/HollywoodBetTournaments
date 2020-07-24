@@ -13,7 +13,7 @@ export class ConfigService {
    get getClientSettings(): UserManagerSettings {
     return {
         authority: 'https://localhost:10000',
-        client_id: 'hollywoodbet_ui',
+        client_id: 'hollywoodbet',
         redirect_uri: 'http://localhost:12000/auth-callback',
         post_logout_redirect_uri: 'http://localhost:12000/',
         response_type:"id_token token",

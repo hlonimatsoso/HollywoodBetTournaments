@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders  } from '@angular/common/http';
 import {ConfigService  } from './config.service';
-import {Observable, of, throwError as observableThrowError, from} from 'rxjs';
+import {Observable, of, throwError as observableThrowError, from, throwError} from 'rxjs';
 import {map, tap,finalize,catchError } from 'rxjs/operators';
 import {  LoggingSettings } from '../models/LoggingSettings';
 import {  LoggingRules } from '../models/LoggingRules';
@@ -28,7 +28,7 @@ export abstract class BaseHttpClient extends LoggingRules{
         this._configService = _config;
     }
 
-    getAll(url:string):Observable<any>{
+    getAll(url:string, typeRequested:string):Observable<any>{
 
         this._messageBus.httpRequest_InProgess_BroadcastUpdate(true);
 
@@ -47,11 +47,13 @@ export abstract class BaseHttpClient extends LoggingRules{
                         console.log(`BaseHttpClient.getAll(${this._config.eventsUrl}).finalize() : HTTP GET request complete.`);
                     this._messageBus.httpRequest_InProgess_BroadcastUpdate(false);
                   }),
-                  catchError( val =>{ 
-                    var msg:String;
-                    msg = "*** \nHTTP client CAUGHT sleeping on the job ";
-                    console.error(`BaseHttpClient.getAll()._http.get.catchError(): CAUGHT '${url}' ERROR -> ${msg}\n***`);
-                    return of(`${msg}: ${val}`)
+                  catchError( error =>{ 
+
+                    var msg = `Failed getting ${typeRequested}`;
+                    this._messageBus.raiseErrorSnack(msg,"ERROR !");
+
+                    console.error(`BaseHttpClient.getAll()._http.get.catchError()\n HTTP Get error url : '${url}' \n ${JSON.stringify(error)}\n***`);
+                    return throwError(`${msg}: ${JSON.stringify(error)}`)
                   })
                 );
     }

@@ -33,7 +33,7 @@ export class TournamentService extends BaseHttpClient {
 * @returns Observable<Tournament>
 */
   getAllTournaments():Observable<any>{
-    return this.getAll(this._configService.tournamentsUrl);
+    return this.getAll(this._configService.tournamentsUrl,"tournamnets");
   }
   
 /**

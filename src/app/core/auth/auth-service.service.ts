@@ -17,12 +17,16 @@ private _user:User
 
  // Observable auth source
 private _isAuthenticated = new BehaviorSubject<boolean>(false);
+private _authenticatedUser = new BehaviorSubject<any>(false);
+
 private _httpErrors = new BehaviorSubject<any>(false);
 //private _isBusy = new BehaviorSubject<boolean>(false);
 
 
 // Observable auth stream for external interested parties to subscribe to
 isAuthenticated$ = this._isAuthenticated.asObservable();
+authenticatedUser$ = this._authenticatedUser.asObservable();
+
 
 // Observable stream of http error for any interested parties to subscribe to
 httpErrors$ = this._httpErrors.asObservable();
@@ -36,6 +40,7 @@ httpErrors$ = this._httpErrors.asObservable();
     this._manager.getUser().then(user => {
       this._user = user;
       this._isAuthenticated.next(this.isAuthenticated());
+      this._authenticatedUser.next(this._user);     
 
     });
   }
@@ -57,7 +62,8 @@ httpErrors$ = this._httpErrors.asObservable();
       this._user = await this._manager.signinRedirectCallback();
     console.log(`Auth Service: completeAuthentication signed in user ${JSON.stringify(this._user)}`);
 
-      this._isAuthenticated.next(this.isAuthenticated());      
+      this._isAuthenticated.next(this.isAuthenticated()); 
+      this._authenticatedUser.next(this._user);     
   }  
 
   register(userRegistration: any) { 

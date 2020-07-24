@@ -18,11 +18,11 @@ export class EventDetailsService extends BaseHttpClient {
   }
 
   GetAllEventDetails():Observable<any>{
-    return this.getAll(this._configService.eventDetailUrl);
+    return this.getAll(this._configService.eventDetailUrl,"event details");
   }
   
   GetAllEventDetailStatuses():Observable<any>{
-    return this.getAll(this._configService.eventDetailStatusUrl);
+    return this.getAll(this._configService.eventDetailStatusUrl,"event details status");
   }
 
   PostAEventDetail(data:any){

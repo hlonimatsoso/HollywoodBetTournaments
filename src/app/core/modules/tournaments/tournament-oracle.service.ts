@@ -1,7 +1,7 @@
 import { Injectable, OnInit, OnDestroy } from '@angular/core';
 import { TournamentService } from './tournament.service';
 import { Tournament } from './../../shared/models/Tournament';
-import {Subject,BehaviorSubject,Observable, of} from 'rxjs';
+import {Subject,BehaviorSubject,Observable, of, throwError} from 'rxjs';
 import {ConfigService  } from '../../shared/services/config.service';
 import {map, tap,finalize,catchError } from 'rxjs/operators';
 import { Constants } from '../../shared/models/constants';
@@ -163,11 +163,11 @@ getEventsForTournamentID(tournamentID:number):RaceEvent[]{
                     if(this._config.LoggingSettings.TournamentOracleService_Can_Log)
                       console.log(`TournamentOracle.pleaseGetMeGetAllTournaments().finalize(): Requesting all tournaments complete`);
                   }),
-                  catchError( val =>{ 
+                  catchError( error =>{ 
                     var msg:String;
-                    msg = "*** \nTournament Oracle CAUGHT sleeping on the job ";
-                    console.error(`TournamentOracle.pleaseGetMeGetAllTournaments().catchError(): !!! ERROR !!! -> ${msg}\n***`);
-                    return of(`${msg}: ${val}`)
+                    msg = `TournamentOracle.loadTournaments().catchError()\nFailed to load tournaments\n${error}`;
+                    console.error(`${msg}`);
+                    return throwError(`${msg}`)
                   })
 
                 ).subscribe(list=>{                  
@@ -175,7 +175,7 @@ getEventsForTournamentID(tournamentID:number):RaceEvent[]{
                     this.tournaments$ = new BehaviorSubject(list);
                     this.ready$.next(this);
                     this.tournaments$.next(list);
-                    console.log(`TournamentOracle.loadTournaments().subscribe() : Tournament Oracle is now ready, tournaments list defaulted to -> ${JSON.stringify(list)}`);
+                    console.log(`TournamentOracle.loadTournaments().subscribe()  : Tournament Oracle is now ready, tournaments list defaulted to -> ${JSON.stringify(list)}`);
                   }
                 });
 

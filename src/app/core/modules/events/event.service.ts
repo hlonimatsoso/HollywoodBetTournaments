@@ -18,7 +18,7 @@ export class EventService extends BaseHttpClient {
   }
 
   GetAllEvents():Observable<any>{
-    return this.getAll(this._configService.eventsUrl);
+    return this.getAll(this._configService.eventsUrl,"events");
   }
   
   PostAEvent(data:any){

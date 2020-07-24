@@ -1,7 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 import { EventService } from './event.service';
 import { RaceEvent } from './../../shared/models/Event';
-import {Subject,Observable, of, BehaviorSubject} from 'rxjs';
+import {Subject,Observable, of, BehaviorSubject, throwError} from 'rxjs';
 import {ConfigService  } from '../../shared/services/config.service';
 import {map, tap,finalize,catchError } from 'rxjs/operators';
 import { Constants } from '../../shared/models/constants';
@@ -169,16 +169,16 @@ addToEventDeleteList(event:RaceEvent){
                   .pipe(
                     tap(dbList=>{
                       if(this._config.LoggingSettings.EventOracleService_Can_Log)
-                        console.log(`EventOracle.pleaseGetMeGetAllEvents().tap(): Setting The Oracles list with the result -> ${JSON.stringify(dbList)}`);
+                        console.log(`EventOracle.loadEvents().tap(): Setting The Oracles list with the result -> ${JSON.stringify(dbList)}`);
                    }),
                     finalize(()=>{
                       if(this._config.LoggingSettings.EventOracleService_Can_Log)
-                        console.log(`EventOracle.pleaseGetMeGetAllEvents().finalize(): Requesting all events complete`);
+                        console.log(`EventOracle.loadEvents().finalize(): Requesting all events complete`);
                     }),
                     catchError( error =>{ 
-                      var msg = "*** EventOracle.pleaseGetMeGetAllEvents().catchError(): \nEvent Oracle CAUGHT sleeping on the job ***\n";
-                      console.error(`${msg} : ${error}`);
-                      return of(`${msg} : ${error}`)
+                      var msg = `EventOracle.loadEvents().catchError() \nLoading Events failed \n ${error}`;
+                      console.error(`${msg}`);
+                      return throwError(`${msg}`)
                     })
 
                   ).subscribe(list=>{
