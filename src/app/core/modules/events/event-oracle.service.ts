@@ -254,6 +254,7 @@ addToEventDeleteList(event:RaceEvent){
 */
   pleaseUpdateAEvent(data:RaceEvent){
 
+
        this._service.UpdateEvent(data)
                   .pipe(
                     tap(result=>{
@@ -278,8 +279,14 @@ addToEventDeleteList(event:RaceEvent){
                     if(event){
                       var list:RaceEvent[] = this.events$.getValue();
                       list.forEach(element => {
-                        if(element.eventID == event.eventID)
-                            element.eventName = event.eventName;
+                        if(element.eventID == event.eventID){
+                          element.eventNumber = event.eventNumber;
+                          element.autoClose = event.autoClose;
+                          element.eventDateTime = event.eventDateTime;
+                          element.eventEndDateTime = event.eventEndDateTime;
+                          element.tournamentID = event.tournamentID;
+                          element.eventName = event.eventName;
+                        }
                       });
 
                       // braoadcast update

@@ -28,17 +28,17 @@ export class Animations {
           transition(
             ':enter', 
             [
-              style({ height: 0, opacity: 0 }),
-              animate('1.5s ease-out', 
-                      style({ height: '100%', opacity: 1 }))
+              style({ opacity: 0 }),
+              animate('0.75s ease-in', 
+                      style({ opacity: 1 }))
             ]
           ),
           transition(
             ':leave', 
             [
-              style({ height: '100%', opacity: 1 }),
-              animate('0.75s ease-out', 
-                      style({ height: 0, opacity: 0 }))
+              style({ opacity: 1 }),
+              animate('0.50s ease-out', 
+                      style({opacity: 0 }))
             ]
           )
         ]

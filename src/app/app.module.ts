@@ -49,7 +49,7 @@ export class AppModule {
 
   constructor(private _messageBus:MessageBusService, private _spinner: NgxSpinnerService){
     this._messageBus.httpRequest_InProgess$.subscribe(x=>{
-      if(x)
+     if(x)
         this._spinner.show();
       else
         this._spinner.hide();

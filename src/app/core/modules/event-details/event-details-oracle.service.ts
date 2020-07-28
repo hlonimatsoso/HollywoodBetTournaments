@@ -1,7 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 import { EventDetailsService } from './event-details.service';
 import { EventDetail } from './../../shared/models/EventDetail';
-import {Subject,Observable, of, BehaviorSubject} from 'rxjs';
+import {Subject,Observable, of, BehaviorSubject, throwError} from 'rxjs';
 import {ConfigService  } from '../../shared/services/config.service';
 import {map, tap,finalize,catchError } from 'rxjs/operators';
 import {EventDetailStatus} from '../../shared/models/EventDetailStatus';
@@ -15,7 +15,7 @@ import { Constants } from '../../shared/models/constants';
 })
 export class EventDetailsOracleService implements OnInit {
 
-  ready$ = new BehaviorSubject(this);
+  //ready$ = new BehaviorSubject(this);
   eventDetails$ = new BehaviorSubject(null);
   eventDetailsToDelete$ = new BehaviorSubject(null);
   currentEditingAction$ = new BehaviorSubject(Constants.toolbar_button_add_action);
@@ -28,9 +28,10 @@ export class EventDetailsOracleService implements OnInit {
   
   constructor(private _service:EventDetailsService,private _eventsOracle:EventOracleService, private _config:ConfigService) {
     console.log(`EventOracle.constructor() : Loading events...`);
-    this.availableStatuses = this.getAvailableStatuses();
+    this.setAvailableStatuses();
     this.loadEventDetails();
     this.eventDetailsToDelete = [];
+    this.eventDetailsToDelete$.next(this.eventDetailsToDelete);
   }
   
   ngOnInit(): void {
@@ -41,9 +42,7 @@ export class EventDetailsOracleService implements OnInit {
 
   eventDetailsToDelete:EventDetail[];
 
-  availableStatuses:EventDetailStatus[];
-
-  events:RaceEvent[]
+  events:RaceEvent[];
 
 
  removefromList(list:EventDetail[]){
@@ -58,7 +57,7 @@ export class EventDetailsOracleService implements OnInit {
     }
   }
 
-   getAvailableStatuses():EventDetailStatus[]{
+   setAvailableStatuses():EventDetailStatus[]{
     var result:EventDetailStatus[] = [];
     this._service.GetAllEventDetailStatuses().subscribe(
       (x)=>{
@@ -163,11 +162,10 @@ onIsToolBarEnabledChange(flag:boolean){
                       return of(`${msg} : ${error}`)
                     })
 
-                  ).subscribe(list=>{
+                  ).subscribe(list => {
                   
                     if(list){
-                      this.eventDetails$ = new BehaviorSubject(list);
-                      this.ready$.next(this);
+                      this.eventDetails$.next(list);
                       console.log(`EventsOracle.loadEvents().subscribe() : Events Oracle is now ready, events list defaulted to -> ${JSON.stringify(list)}`);
                     }
                   });
@@ -267,21 +265,16 @@ onIsToolBarEnabledChange(flag:boolean){
                     }),
                     finalize(()=>{
                       if(this._config.LoggingSettings.EventDetailsOracleService_Can_Log)
-                        console.log(`EventDetailOracle.pleaseDeleteTheseEventDetails().finalize(): Request to Update the event is complete. About to broadcast the UPDATED event -> ${JSON.stringify(data)}`);
+                        console.log(`EventDetailOracle.pleaseDeleteTheseEventDetails().finalize(): Request to delte the event is complete.`);
                     }),
                     catchError( error =>{ 
-                      var msg = "*** EventDetailOracle.pleaseDeleteTheseEventDetails().catchError(): \nEvent Oracle CAUGHT sleeping on the job ***\n";
-                      console.error(`${msg} : ${error}`);
-                      return of(`${msg} : ${error}`)
+                      var msg = `EventDetailOracle.pleaseDeleteTheseEventDetails().catchError() \nDeleting Event Details failed \n ${error}`;
+                      console.error(`${msg}`);
+                      return throwError(`${msg}`)
                     })
 
-                  ).subscribe(list=>{
-                  
-                    if(list){
-                      this.eventDetails$ = new BehaviorSubject(list);
-                      this.ready$.next(this);
-                      console.log(`EventDetailsOracle.pleaseDeleteTheseEventDetails().subscribe() : Events Oracle is now ready, events list defaulted to -> ${JSON.stringify(list)}`);
-                    }
+                  ).subscribe(() => {
+                     console.log(`EventDetailsOracle.pleaseDeleteTheseEventDetails().subscribe() : Events deleted.`);
                   });
 
   }

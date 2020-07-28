@@ -3,21 +3,25 @@ import { EventDetail } from '../../../shared/models/EventDetail';
 import { EventDetailsOracleService } from '../event-details-oracle.service';
 import { tap } from 'rxjs/operators';
 import { Validators, FormControl } from '@angular/forms';
+import { Animations } from 'src/app/core/shared/models/Animations';
+import { TheOracleService } from 'src/app/core/shared/services/the-oracle.service';
 
 
 
 @Component({
   selector: 'app-event-card-list',
   templateUrl: './event-details-card-list.component.html',
-  styleUrls: ['./event-details-card-list.component.scss']
+  styleUrls: ['./event-details-card-list.component.scss'],
+  animations:[
+    Animations.InOutAnimation(null)
+  ]
 })
 export class EventDetailsCardListComponent implements OnInit,OnDestroy {
 
   @Input() eventDetails:EventDetail[] = [];
   @Input() isEditingEnabled:boolean;
 
-  private _ready$Subscrioption;
-  private _tournaments$Subscrioption;
+  private _eventDetails$Subscrioption;
   private _isToolBarEnabled$Subscrioption;
   private _tournamentsToDelete$Subscription;
 
@@ -28,38 +32,35 @@ export class EventDetailsCardListComponent implements OnInit,OnDestroy {
   action:string;
 
 
-  constructor(private _ohGreatOracle:EventDetailsOracleService) { }
+  constructor(private _theOracle:TheOracleService) { }
 
   
   ngOnDestroy(): void {
 
     console.log(`TournamentCardList.ngOnDestroy() : Unsubscribing from oracle._ready$, oracle.isToolBarEnabled$, oracle.tournamentsToDelete$ & oracle.tournaments$ subscribtions`);
     
-    this._ready$Subscrioption.unsubscribe();
     this._isToolBarEnabled$Subscrioption.unsubscribe();
     this._tournamentsToDelete$Subscription.unsubscribe();
-    this._tournaments$Subscrioption.unsubscribe();
+    this._eventDetails$Subscrioption.unsubscribe();
 
   }
 
   ngOnInit(): void {
-    this._ready$Subscrioption = this._ohGreatOracle.ready$.subscribe( oracle => {
 
-      // Bind to oracles list of Event Details
-      this._tournaments$Subscrioption = oracle.eventDetails$.subscribe( list => {
-                                        this.eventDetails = list;
-      })
-      
-      // Bind to oracles is Editing Enabled flag
-      this._isToolBarEnabled$Subscrioption =  oracle.isToolBarEnabled$.subscribe(flag => {
-                                              this.isEditingEnabled = flag;
-      });
+    // Bind to oracles is Editing Enabled flag
+    this._isToolBarEnabled$Subscrioption =  this._theOracle.eventDetailsOracle.isToolBarEnabled$.subscribe(flag => {
+      this.isEditingEnabled = flag;
+    });
 
-      // Bind to oracles delete list
-      this._tournamentsToDelete$Subscription =  oracle.eventDetailsToDelete$.subscribe( list => {
-                                                this.oracleDeleteList = list;
-      });
-});
+    // Bind to oracles delete list
+    this._tournamentsToDelete$Subscription =  this._theOracle.eventDetailsOracle.eventDetailsToDelete$.subscribe( list => {
+      this.oracleDeleteList = list;
+    });
+
+    // Bind to oracles list of Event Details
+    this._eventDetails$Subscrioption = this._theOracle.eventDetailsOracle.eventDetails$.subscribe( list => {
+     this.eventDetails = list;
+    });
    
         
   }

@@ -7,6 +7,7 @@ import { tap,finalize,catchError } from 'rxjs/operators';
 import {of} from 'rxjs';
 import {ConfigService  } from '../../../shared/services/config.service';
 import {TournamentOracleService  } from '../../tournaments/tournament-oracle.service';
+import { TheOracleService } from 'src/app/core/shared/services/the-oracle.service';
 
 
 
@@ -40,7 +41,7 @@ export class EventCardToolBarComponent implements OnInit {
 
   _tournament = new FormControl('', [Validators.required]);
 
-  constructor(private _ohGreatOracle:EventOracleService,private _config:ConfigService, private _tournamentOracle:TournamentOracleService) {
+  constructor(private _theOracle:TheOracleService) {
     this.eventDeleteList = [];
    }
   ngOnInit(): void {
@@ -48,7 +49,7 @@ export class EventCardToolBarComponent implements OnInit {
     
     this._eventName = new FormControl('', [Validators.required]);
 
-    this._ohGreatOracle.ready$.subscribe( oracle => {
+    this._theOracle.eventOracle.ready$.subscribe( oracle => {
 
                               oracle.eventsToDelete$.subscribe( deleteList => {
                                                           this.eventDeleteList = deleteList;
@@ -62,6 +63,13 @@ export class EventCardToolBarComponent implements OnInit {
                                                               if(event){
                                                                 this._activeEventForEditing = event;
                                                                 this._eventName.setValue(this._activeEventForEditing.eventName);
+                                                                this._eventNumber.setValue(this._activeEventForEditing.eventNumber);
+                                                                this._eventDate.setValue(this._activeEventForEditing.eventDateTime);
+                                                                this._eventEndDate.setValue(this._activeEventForEditing.eventDateTime);
+                                                                this._autoClose.setValue(this._activeEventForEditing.autoClose);
+                                                                this._tournament.setValue(this._activeEventForEditing.tournamentID);
+
+
                                                               }
                               });
                               oracle.isToolBarEnabled$.subscribe(flag => {
@@ -79,7 +87,7 @@ export class EventCardToolBarComponent implements OnInit {
 * @returns {void} no return
 */
 onActionChange(event:any){
-  this._ohGreatOracle.onCurrentActionChange(event.value);
+  this._theOracle.eventOracle.onCurrentActionChange(event.value);
 }
 
 /**
@@ -92,7 +100,7 @@ onActionChange(event:any){
 */
 onEnableToolBarEditingOptionsChanged(event:boolean)
 {
-  this._ohGreatOracle.onIsToolBarEnabledChange(event);
+  this._theOracle.eventOracle.onIsToolBarEnabledChange(event);
 }
 
 
@@ -145,7 +153,7 @@ onEnableToolBarEditingOptionsChanged(event:boolean)
   }
 
   get currentTournamentList(){
-    return this._tournamentOracle.tournaments$.getValue();
+    return this._theOracle.tournamentOracle.tournaments$.getValue();
   }
 
   getErrorMessage() {
@@ -200,7 +208,7 @@ onEnableToolBarEditingOptionsChanged(event:boolean)
     event.eventDateTime = this._eventDate.value;
     event.eventEndDateTime = this._eventEndDate.value;
 
-    this._ohGreatOracle.pleaseAddAEvent(event)
+    this._theOracle.eventOracle.pleaseAddAEvent(event)
        
     }
 
@@ -208,12 +216,18 @@ onEnableToolBarEditingOptionsChanged(event:boolean)
     var t = { } as RaceEvent;
     t.eventName = name;
     t.eventID = this._activeEventForEditing.eventID;
+    t.tournamentID = this._tournament.value;
+    t.autoClose = this._autoClose.value;
+    t.eventDateTime = this._eventDate.value;
+    t.eventEndDateTime = this._eventEndDate.value;
+    t.eventNumber = this._eventNumber.value;
 
-    this._ohGreatOracle.pleaseUpdateAEvent(t)
+
+    this._theOracle.eventOracle.pleaseUpdateAEvent(t)
    }
 
   deleteEvent(){
-    this._ohGreatOracle.pleaseDeleteTheseEvents(this.eventDeleteList);
+    this._theOracle.eventOracle.pleaseDeleteTheseEvents(this.eventDeleteList);
     
   }
 }

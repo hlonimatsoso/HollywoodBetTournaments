@@ -10,6 +10,7 @@ import {TournamentOracleService  } from '../../tournaments/tournament-oracle.ser
 import { EventOracleService } from '../../events/event-oracle.service';
 import { EventDetailStatus } from 'src/app/core/shared/models/EventDetailStatus';
 import { TheOracleService } from 'src/app/core/shared/services/the-oracle.service';
+import { Animations } from 'src/app/core/shared/models/Animations';
 //import { EventDetail } from 'src/app/core/shared/models/EventDetail';
 
 
@@ -20,13 +21,17 @@ import { TheOracleService } from 'src/app/core/shared/services/the-oracle.servic
 @Component({
   selector: 'app-event-card-tool-bar',
   templateUrl: './event-details-card-tool-bar.component.html',
-  styleUrls: ['./event-details-card-tool-bar.component.scss']
+  styleUrls: ['./event-details-card-tool-bar.component.scss'],
+  animations:[
+    Animations.InOutAnimation(null)
+   ]
 })
 export class EventDetailsCardToolBarComponent implements OnInit {
 
   @Input() public isEditingEnabled:boolean;
-  @ViewChild("name") nameField: ElementRef
+  //@ViewChild("name") nameField: ElementRef
 
+  
   action:string;
 
   _activeEventDetailForEditing:EventDetail;
@@ -65,30 +70,32 @@ export class EventDetailsCardToolBarComponent implements OnInit {
   constructor(private _oracle:TheOracleService,private _config:ConfigService) { }
 
   ngOnInit(): void {
-    this._eventDetailName = new FormControl('', [Validators.required]);
+    //this._eventDetailName = new FormControl('', [Validators.required]);
 
-    this._oracle.eventDetailsOracle.ready$.subscribe( oracle => {
-
-                              oracle.eventDetailsToDelete$.subscribe( deleteList => {
-                                                          this.eventDetailsDeleteList = deleteList;
-                              });
-                              oracle.currentEditingAction$.subscribe( action => {
-                                                          this.action = action;
-                                                          // if(action == "Add")
-                                                          //   this._tournamentName.setValue("");
-                              });
-                              oracle.currentEditingEventDetail$.subscribe( horse => {
-                                                                if(horse)
-                                                                  this.fillControlsWithEventDetailsData(horse);
-                                                             
-                              });
-                              oracle.isToolBarEnabled$.subscribe(flag => {
-                                                      this.isEditingEnabled = flag;
-                              });
-                              oracle.eventDetailStatuses$.subscribe(x => {
-                                this.eventDetailStatuses = x;
-                              });
+    this._oracle.eventDetailsOracle.eventDetailsToDelete$.subscribe( deleteList => {
+      this.eventDetailsDeleteList = deleteList;
     });
+
+    this._oracle.eventDetailsOracle.currentEditingAction$.subscribe( action => {
+      this.action = action;
+      // if(action == "Add")
+      //   this._tournamentName.setValue("");
+    });
+
+    this._oracle.eventDetailsOracle.currentEditingEventDetail$.subscribe( horse => {
+      if(horse)
+        this.fillControlsWithEventDetailsData(horse);
+   
+    });
+
+    this._oracle.eventDetailsOracle.isToolBarEnabled$.subscribe(flag => {
+      this.isEditingEnabled = flag;
+    });
+
+    this._oracle.eventDetailsOracle.eventDetailStatuses$.subscribe(x => {
+      this.eventDetailStatuses = x;
+    });
+    
   }
   fillControlsWithEventDetailsData(horse: EventDetail) {
     this._activeEventDetailForEditing = horse;
@@ -244,7 +251,7 @@ onEnableToolBarEditingOptionsChanged(event:boolean)
     event.eventID = this._event.value;
     event.eventDetailStatusID = this._eventDetailStatus.value;
 
-
+debugger;
     this._oracle.eventDetailsOracle.pleaseAddAEventDEtail(event);
        
     }
@@ -258,6 +265,8 @@ onEnableToolBarEditingOptionsChanged(event:boolean)
     t.finishingPosition = this._finishingPosition.value;
     t.eventDetailOdd = this._eventDetailOdd.value;
     t.firstTimer = this._firstTimer.value;
+    t.eventDetailNumber = this._eventDetailNumber.value;
+
 
     this._oracle.eventDetailsOracle.pleaseUpdateAEventDetails(t);
   }

@@ -1,9 +1,9 @@
 <div class="toolBar">
   <span class="margin_x_10"></span>
-    <mat-checkbox (change)="onEnableToolBarEditingOptionsChanged($event.checked)"></mat-checkbox>
+    <mat-checkbox (change)="onEnableToolBarEditingOptionsChanged($event.checked)" [checked]="isEditingEnabled" ></mat-checkbox>
     <span class="margin_x_10">Enabler Editing</span>
     <div class="toolBarButtons" *ngIf="isEditingEnabled">
-        <mat-button-toggle-group (change)="onActionChange($event)">
+        <mat-button-toggle-group (change)="onActionChange($event)" [@inOutAnimation]>
             <mat-button-toggle value="Add">Add</mat-button-toggle>
             <mat-button-toggle disabled value="Edit">Edit</mat-button-toggle>
             <mat-button-toggle value="Delete">Delete</mat-button-toggle>
@@ -12,20 +12,20 @@
     <span class="margin_x_10"></span>
 
      <div *ngIf="isEditingEnabled && (action != 'Delete')">
-        <mat-form-field  class="margin_x_5">
+        <mat-form-field  class="margin_x_5" [@inOutAnimation]>
             <mat-label>Event Detail Name</mat-label>
             <input #name matInput placeholder="Lucky Number Sleven" [formControl]="_eventDetailName" required>
             <mat-hint>Enter name here</mat-hint>
             <mat-error *ngIf="_eventDetailName.invalid">{{getErrorMessage()}}</mat-error>
         </mat-form-field>
 
-        <mat-form-field  class="margin_x_5" appearance="fill" *ngIf="_eventDetailName.valid">
+        <mat-form-field  class="margin_x_5" appearance="fill" *ngIf="_eventDetailName.valid" [@inOutAnimation]>
           <mat-label>Event Detail Number</mat-label>
           <input type="number" matInput placeholder="777" [formControl]="_eventDetailNumber" required>
           <mat-error *ngIf="_eventDetailNumber.invalid">{{getEventNumberValidationMessage}}</mat-error>
         </mat-form-field>
     
-        <mat-form-field class="margin_x_5" appearance="fill"  *ngIf="_eventDetailNumber.valid">
+        <mat-form-field class="margin_x_5" appearance="fill"  *ngIf="_eventDetailNumber.valid" [@inOutAnimation]>
           <mat-label>Event to register under</mat-label>
           <mat-select [formControl]="_event" required>
             <mat-option>--</mat-option>
@@ -37,13 +37,13 @@
           <!-- <mat-hint>{{tournament.value?.sound}}</mat-hint> -->
         </mat-form-field>
 
-        <mat-form-field class="margin_x_5" appearance="fill" *ngIf="_event.valid">
+        <mat-form-field class="margin_x_5" appearance="fill" *ngIf="_event.valid" [@inOutAnimation]>
           <mat-label>Horses Odds</mat-label>
           <input type="number" matInput placeholder="5" [formControl]="_eventDetailOdd" required>
           <mat-error *ngIf="_eventDetailOdd.invalid">{{getEventDetailOddsValidationMessage}}</mat-error>
         </mat-form-field>
     
-        <mat-form-field class="margin_x_5" appearance="fill"  *ngIf="_eventDetailNumber.valid">
+        <mat-form-field class="margin_x_5" appearance="fill"  *ngIf="_eventDetailOdd.valid" [@inOutAnimation]>
           <mat-label>Event Detail Status</mat-label>
           <mat-select [formControl]="_eventDetailStatus" required>
             <mat-option>--</mat-option>
@@ -55,15 +55,17 @@
           <!-- <mat-hint>{{tournament.value?.sound}}</mat-hint> -->
         </mat-form-field>
     
-        <mat-form-field class="margin_x_5" appearance="fill" *ngIf="_eventDetailStatus.valid">
+        <mat-form-field class="margin_x_5" appearance="fill" *ngIf="_eventDetailStatus.valid" [@inOutAnimation]>
           <mat-label>Finishing Position</mat-label>
           <input type="number" matInput placeholder="777" [formControl]="_finishingPosition" required>
           <mat-error *ngIf="_finishingPosition.invalid">{{getEventNumberValidationMessage}}</mat-error>
         </mat-form-field>
 
-        <mat-slide-toggle class="margin_x_5"
+        <mat-slide-toggle 
+        class="margin_x_5"
         *ngIf="_finishingPosition.valid"
-        [formControl]="_firstTimer">
+        [formControl]="_firstTimer"
+        [@inOutAnimation]>
           First time racing ?
         </mat-slide-toggle>
 
@@ -76,7 +78,7 @@
        <span>Deleting the following events:</span>
         <mat-chip-list>
             <mat-chip selectable removable (removed)="remove(chip)" *ngFor="let chip of eventDetailsDeleteList" selected color="warn">
-              {{chip.eventName}}
+              {{chip.eventDetailName}}
               <mat-icon matChipRemove>cancel</mat-icon>
             </mat-chip>
         </mat-chip-list>

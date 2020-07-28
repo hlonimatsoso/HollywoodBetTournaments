@@ -34,24 +34,22 @@ export class EventCardComponent implements OnInit {
   }
   constructor(private _oracle:TheOracleService) {
     this.oracleDeleteList = [];
-   }
+  }
 
   ngOnInit(): void {
+    
+    this._oracle.eventDetailsOracle.eventDetails$.subscribe(horses => {
+      if(!horses)
+        return null;
+      
+      var filteredList = horses.filter( x => x.eventID == this.event.eventID)
+
+      this.horses$.next(filteredList);
+      this.horseCount$.next(filteredList.length);
+    });
+
     this.tournament = this._oracle.tournamentOracle.getTournamentByID(this.event.tournamentID);
-    //this.horses = this._oracle.eventOracle.getHorsesForEventID(this.event.eventID);
-    this._oracle.eventDetailsOracle.ready$.subscribe(oracle => {
-      oracle.eventDetails$.subscribe(list => {
-        if(!list)
-          return null;
-          
-        var filteredList = list.filter( x => x.eventID == this.event.eventID)
-        this.horses$.next(filteredList);
-        this.horseCount$.next(filteredList.length);
-      });
-    });
-    this.horses$.subscribe(list => {
-      this.horses = list;
-    });
+
   }
 
   onEdit(eventArgument){

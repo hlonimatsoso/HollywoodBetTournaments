@@ -5,6 +5,7 @@ import { catchError } from 'rxjs/operators';
 import { UserManager, UserManagerSettings, User } from 'oidc-client';
 import {ConfigService} from '../shared/services/config.service'
 import { BehaviorSubject } from 'rxjs'; 
+import { MessageBusService } from '../shared/services/message-bus.service';
 
 
 @Injectable({
@@ -31,7 +32,7 @@ authenticatedUser$ = this._authenticatedUser.asObservable();
 // Observable stream of http error for any interested parties to subscribe to
 httpErrors$ = this._httpErrors.asObservable();
 
-  constructor(private _settings:ConfigService, private _http: HttpClient ) { 
+  constructor(private _settings:ConfigService, private _http: HttpClient , private _messageBus:MessageBusService) { 
     this._manager = new UserManager(_settings.getClientSettings)
     this.setUser();
   }
@@ -50,7 +51,21 @@ httpErrors$ = this._httpErrors.asObservable();
   }
 
   login() { 
-    return this._manager.signinRedirect();   
+    
+    this._messageBus.httpRequest_InProgess_BroadcastUpdate(true);
+
+    this._manager.signinRedirect()
+                        .then(x => {
+                          this._messageBus.httpRequest_InProgess_BroadcastUpdate(false);
+                          console.log(`Login redirect SUCCESS`);
+                        })
+                        .catch(error => {
+                          this._messageBus.httpRequest_InProgess_BroadcastUpdate(false);
+                          this._messageBus.raiseErrorSnack(error,"Login redirect error")
+                          console.log(`Login redirect ERROR: ${error}`);
+                        });
+
+    
   }
 
   logOUt() { 

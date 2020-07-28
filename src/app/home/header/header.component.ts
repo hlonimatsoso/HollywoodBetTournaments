@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {AuthServiceService} from '../../core/auth/auth-service.service'
 import { Subscription } from 'rxjs';
-import { TournamentOracleService } from 'src/app/core/modules/tournaments/tournament-oracle.service';
 import { User } from 'oidc-client';
 
 @Component({

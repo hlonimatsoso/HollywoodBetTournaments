@@ -8,7 +8,7 @@
         <button mat-button>View</button> <button *ngIf="isEditingEnabled"  mat-button (click)="onEdit($event)">Edit</button> <button  *ngIf="isEditingEnabled"   mat-button [disabled]="isMarkedForDeletion" (click)="onDelete($event)">Delete</button>
     </mat-card-actions>
     <mat-card-footer>
-        <b>Status : </b>{{eventDetail.eventDetailStatusID}}
+        <b>Status : </b>{{status.eventDetailStatusName}}
     </mat-card-footer><!-- -->
 </mat-card>
 

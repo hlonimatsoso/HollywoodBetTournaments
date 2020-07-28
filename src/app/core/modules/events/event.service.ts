@@ -30,6 +30,7 @@ export class EventService extends BaseHttpClient {
       I post cause the API's POST method checks for a ID on the incomming Event,  
       if it finds it, it run an update against that ID
     */ 
+   debugger;
     return this.Post(this._configService.eventsUrl,data);
   }
 
