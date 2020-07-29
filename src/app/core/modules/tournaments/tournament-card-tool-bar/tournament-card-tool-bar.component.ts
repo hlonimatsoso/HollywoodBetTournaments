@@ -45,25 +45,22 @@ export class TournamentCardToolBarComponent implements OnInit {
     
     this._tournamentName = new FormControl('', [Validators.required]);
 
-    this._oracle.tournamentOracle.ready$.subscribe( oracle => {
-
-                              oracle.tournamentsToDelete$.subscribe( deleteList => {
-                                                          this.tournamentDeleteList = deleteList;
-                              });
-                              oracle.currentEditingAction$.subscribe( action => {
-                                                          this.action = action;
-                                                          if(action == "Add")
-                                                            this._tournamentName.setValue("");
-                              });
-                              oracle.currentEditingTournament$.subscribe( tournment => {
-                                                              if(tournment){
-                                                                this._activeTournamentForEditing = tournment;
-                                                                this._tournamentName.setValue(this._activeTournamentForEditing.tournamentName);
-                                                              }
-                              });
-                              oracle.isToolBarEnabled$.subscribe(flag => {
-                                                      this.isEditingEnabled = flag;
-                              });
+    this._oracle.tournamentOracle.tournamentsToDelete$.subscribe( deleteList => {
+      this.tournamentDeleteList = deleteList;
+    });
+    this._oracle.tournamentOracle.currentEditingAction$.subscribe( action => {
+          this.action = action;
+          if(action == "Add")
+            this._tournamentName.setValue("");
+    });
+    this._oracle.tournamentOracle.currentEditingTournament$.subscribe( tournment => {
+              if(tournment){
+                this._activeTournamentForEditing = tournment;
+                this._tournamentName.setValue(this._activeTournamentForEditing.tournamentName);
+              }
+    });
+    this._oracle.tournamentOracle.isToolBarEnabled$.subscribe(flag => {
+      this.isEditingEnabled = flag;
     });
   }
 

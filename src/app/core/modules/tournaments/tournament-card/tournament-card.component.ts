@@ -29,7 +29,9 @@ export class TournamentCardComponent implements OnInit{
     this.events = [];
    }
   ngOnInit(): void {
-      this.events = this._oracle.tournamentOracle.getEventsForTournamentID(this.tournament.tournamentID);
+      this._oracle.eventOracle.events$.subscribe(e =>{
+        this.events = e.filter(x => x.tournamentID == this.tournament.tournamentID);
+      });
   }
 
   get isMarkedForDeletion(){

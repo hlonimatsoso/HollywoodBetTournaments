@@ -251,10 +251,10 @@ onEnableToolBarEditingOptionsChanged(event:boolean)
     event.eventID = this._event.value;
     event.eventDetailStatusID = this._eventDetailStatus.value;
 
-debugger;
     this._oracle.eventDetailsOracle.pleaseAddAEventDEtail(event);
        
     }
+    
 
   updateEvent(){
     var t = {} as EventDetail;

@@ -48,7 +48,13 @@ export class EventCardComponent implements OnInit {
       this.horseCount$.next(filteredList.length);
     });
 
-    this.tournament = this._oracle.tournamentOracle.getTournamentByID(this.event.tournamentID);
+
+    this._oracle.eventOracle.events$.subscribe(e => {
+
+      var temp = e.find(event =>  event.eventID == this.event.eventID);
+      this.tournament = this._oracle.tournamentOracle.getTournamentByID(temp.tournamentID);
+
+    });
 
   }
 

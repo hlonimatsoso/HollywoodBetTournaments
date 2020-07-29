@@ -1,43 +1,43 @@
 <div class="toolBar">
   <span class="margin_x_10"></span>
-    <mat-checkbox class="margin_x_10" (change)="onEnableToolBarEditingOptionsChanged($event.checked)"></mat-checkbox>
+    <mat-checkbox class="margin_x_10" (change)="onEnableToolBarEditingOptionsChanged($event.checked)" [checked]="isEditingEnabled"></mat-checkbox>
     <span class="margin_x_10">Enabler Editing</span>
     <div class="toolBarButtons margin_x_10" *ngIf="isEditingEnabled">
-        <mat-button-toggle-group (change)="onActionChange($event)">
+        <mat-button-toggle-group (change)="onActionChange($event)" [@inOutAnimation]>
             <mat-button-toggle value="Add">Add</mat-button-toggle>
             <mat-button-toggle disabled value="Edit">Edit</mat-button-toggle>
             <mat-button-toggle value="Delete">Delete</mat-button-toggle>
           </mat-button-toggle-group>
     </div>
      <div *ngIf="isEditingEnabled && (action != 'Delete')">
-        <mat-form-field>
+        <mat-form-field [@inOutAnimation]>
             <mat-label>Event Name</mat-label>
             <input #name matInput placeholder="Durban July" [formControl]="_eventName" required>
             <mat-hint>Enter name here</mat-hint>
             <mat-error *ngIf="_eventName.invalid">{{getErrorMessage()}}</mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="fill" *ngIf="_eventName.valid">
+        <mat-form-field appearance="fill" *ngIf="_eventName.valid" [@inOutAnimation]>
           <mat-label>Event Number</mat-label>
           <input type="number" matInput placeholder="555" [formControl]="_eventNumber" required>
           <mat-error *ngIf="_eventNumber.invalid">{{getEventNumberValidationMessage}}</mat-error>
         </mat-form-field>
     
-        <mat-form-field appearance="fill" *ngIf="_eventNumber.valid">
+        <mat-form-field appearance="fill" *ngIf="_eventNumber.valid" [@inOutAnimation]>
           <mat-label>Choose an event start date</mat-label>
           <input matInput [matDatepicker]="picker" [formControl]="_eventDate">
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
     
-        <mat-form-field appearance="fill" *ngIf="_eventDate.valid">
+        <mat-form-field appearance="fill" *ngIf="_eventDate.valid" [@inOutAnimation]>
           <mat-label>When does the event end?</mat-label>
           <input matInput [matDatepicker]="picker" [formControl]="_eventEndDate">
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
     
-        <mat-form-field appearance="fill"  *ngIf="_eventEndDate.valid">
+        <mat-form-field appearance="fill"  *ngIf="_eventEndDate.valid" [@inOutAnimation]>
           <mat-label>Tournament to join event under</mat-label>
           <mat-select [formControl]="_tournament" required>
             <mat-option>--</mat-option>
@@ -51,7 +51,7 @@
     
         <mat-slide-toggle
         *ngIf="_tournament.valid"
-        [formControl]="_autoClose">
+        [formControl]="_autoClose" [@inOutAnimation]>
           Auto CLose
         </mat-slide-toggle>
 

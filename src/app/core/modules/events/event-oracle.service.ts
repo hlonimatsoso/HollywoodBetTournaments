@@ -21,7 +21,6 @@ import { EventDetailsOracleService } from '../event-details/event-details-oracle
 })
 export class EventOracleService  {
  
-  ready$ = new BehaviorSubject(this);
   events$ = new BehaviorSubject<RaceEvent[]>(null);
   horses$ = new BehaviorSubject<EventDetail[]>(null);
   eventsToDelete$ = new BehaviorSubject(null);
@@ -184,8 +183,7 @@ addToEventDeleteList(event:RaceEvent){
                   ).subscribe(list=>{
                   
                     if(list){
-                      this.events$ = new BehaviorSubject(list);
-                      this.ready$.next(this);
+                      this.events$.next(list);
                       console.log(`EventsOracle.loadEvents().subscribe() : Events Oracle is now ready, events list defaulted to -> ${JSON.stringify(list)}`);
                     }
                   });

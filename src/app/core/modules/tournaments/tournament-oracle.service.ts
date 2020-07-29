@@ -19,9 +19,8 @@ import { RaceEvent } from '../../shared/models/Event';
 @Injectable({
   providedIn: 'root'
 })
-export class TournamentOracleService implements OracleBase {
+export class TournamentOracleService {
 
-  ready$ = new BehaviorSubject(this);
   tournaments$ = new BehaviorSubject(null);
   allEvents$ = new BehaviorSubject<RaceEvent[]>(null);
   tournamentsToDelete$ = new BehaviorSubject(null);
@@ -30,16 +29,15 @@ export class TournamentOracleService implements OracleBase {
   isToolBarEnabled$ = new BehaviorSubject(false);
   
 
-  constructor(private _service:TournamentService, private _config:ConfigService,private _ohGreatEventOracle:EventOracleService) {
+  constructor(private _service:TournamentService, private _config:ConfigService,private _eventOracle:EventOracleService) {
     console.log(`TournamentOracle.constructor() : Loading tournaments...`);
     
     this.loadTournaments();
 
-    this._ohGreatEventOracle.ready$.subscribe(oracle => {
-      oracle.events$.subscribe(events => {
-        this.allEvents$.next(events);
-      });
+    this._eventOracle.events$.subscribe(events => {
+      this.allEvents$.next(events);
     });
+
   }
  
 /**
@@ -172,8 +170,6 @@ getEventsForTournamentID(tournamentID:number):RaceEvent[]{
 
                 ).subscribe(list=>{                  
                   if(list){
-                    this.tournaments$ = new BehaviorSubject(list);
-                    this.ready$.next(this);
                     this.tournaments$.next(list);
                     console.log(`TournamentOracle.loadTournaments().subscribe()  : Tournament Oracle is now ready, tournaments list defaulted to -> ${JSON.stringify(list)}`);
                   }

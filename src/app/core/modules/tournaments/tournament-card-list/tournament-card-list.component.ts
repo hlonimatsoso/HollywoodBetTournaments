@@ -39,22 +39,19 @@ export class TournamentCardListComponent implements OnInit,OnDestroy {
 
     console.log(`TournamentCardList.ngOnInit()._ohGreatOracle.ready$.subscribe() : Oracle data ready, binding to the folling streams: 'oracle.tournaments$', 'oracle.isToolBarEnabled$' and 'oracle.tournamentsToDelete$'`);
 
-    this._ready$Subscrioption = this._oracle.tournamentOracle.ready$.subscribe( oracle => {
+    // Bind to oracles list of Tournaments
+    this._tournaments$Subscrioption = this._oracle.tournamentOracle.tournaments$.subscribe( list => {
+      this.tournaments = list;
+    })
 
-                                // Bind to oracles list of Tournaments
-                                this._tournaments$Subscrioption = oracle.tournaments$.subscribe( list => {
-                                                                  this.tournaments = list;
-                                })
-                                
-                                // Bind to oracles is Editing Enabled flag
-                                this._isToolBarEnabled$Subscrioption =  oracle.isToolBarEnabled$.subscribe(flag => {
-                                                                        this.isEditingEnabled = flag;
-                                });
+    // Bind to oracles is Editing Enabled flag
+    this._isToolBarEnabled$Subscrioption =  this._oracle.tournamentOracle.isToolBarEnabled$.subscribe(flag => {
+            this.isEditingEnabled = flag;
+    });
 
-                                // Bind to oracles delete list
-                                this._tournamentsToDelete$Subscription =  oracle.tournamentsToDelete$.subscribe( list => {
-                                                                          this.oracleDeleteList = list;
-                                });
+    // Bind to oracles delete list
+    this._tournamentsToDelete$Subscription =  this._oracle.tournamentOracle.tournamentsToDelete$.subscribe( list => {
+              this.oracleDeleteList = list;
     });
   }
 
@@ -62,7 +59,6 @@ export class TournamentCardListComponent implements OnInit,OnDestroy {
 
     console.log(`TournamentCardList.ngOnDestroy() : Unsubscribing from oracle._ready$, oracle.isToolBarEnabled$, oracle.tournamentsToDelete$ & oracle.tournaments$ subscribtions`);
     
-    this._ready$Subscrioption.unsubscribe();
     this._isToolBarEnabled$Subscrioption.unsubscribe();
     this._tournamentsToDelete$Subscription.unsubscribe();
     this._tournaments$Subscrioption.unsubscribe();

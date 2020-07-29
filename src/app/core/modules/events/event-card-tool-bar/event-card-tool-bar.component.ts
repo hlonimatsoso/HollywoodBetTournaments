@@ -8,6 +8,7 @@ import {of} from 'rxjs';
 import {ConfigService  } from '../../../shared/services/config.service';
 import {TournamentOracleService  } from '../../tournaments/tournament-oracle.service';
 import { TheOracleService } from 'src/app/core/shared/services/the-oracle.service';
+import { Animations } from 'src/app/core/shared/models/Animations';
 
 
 
@@ -17,7 +18,10 @@ import { TheOracleService } from 'src/app/core/shared/services/the-oracle.servic
 @Component({
   selector: 'app-event-card-tool-bar',
   templateUrl: './event-card-tool-bar.component.html',
-  styleUrls: ['./event-card-tool-bar.component.scss']
+  styleUrls: ['./event-card-tool-bar.component.scss'],
+  animations:[
+    Animations.InOutAnimation(null)
+   ]
 })
 export class EventCardToolBarComponent implements OnInit {
 
@@ -48,34 +52,31 @@ export class EventCardToolBarComponent implements OnInit {
 
     
     this._eventName = new FormControl('', [Validators.required]);
-
-    this._theOracle.eventOracle.ready$.subscribe( oracle => {
-
-                              oracle.eventsToDelete$.subscribe( deleteList => {
-                                                          this.eventDeleteList = deleteList;
-                              });
-                              oracle.currentEditingAction$.subscribe( action => {
-                                                          this.action = action;
-                                                          if(action == "Add")
-                                                            this._eventName.setValue("");
-                              });
-                              oracle.currentEditingEvent$.subscribe( event => {
-                                                              if(event){
-                                                                this._activeEventForEditing = event;
-                                                                this._eventName.setValue(this._activeEventForEditing.eventName);
-                                                                this._eventNumber.setValue(this._activeEventForEditing.eventNumber);
-                                                                this._eventDate.setValue(this._activeEventForEditing.eventDateTime);
-                                                                this._eventEndDate.setValue(this._activeEventForEditing.eventDateTime);
-                                                                this._autoClose.setValue(this._activeEventForEditing.autoClose);
-                                                                this._tournament.setValue(this._activeEventForEditing.tournamentID);
-
-
-                                                              }
-                              });
-                              oracle.isToolBarEnabled$.subscribe(flag => {
-                                                      this.isEditingEnabled = flag;
-                              });
+    this._theOracle.eventOracle.eventsToDelete$.subscribe( deleteList => {
+      this.eventDeleteList = deleteList;
     });
+    this._theOracle.eventOracle.currentEditingAction$.subscribe( action => {
+          this.action = action;
+          if(action == "Add")
+            this._eventName.setValue("");
+    });
+    this._theOracle.eventOracle.currentEditingEvent$.subscribe( event => {
+              if(event){
+                this._activeEventForEditing = event;
+                this._eventName.setValue(this._activeEventForEditing.eventName);
+                this._eventNumber.setValue(this._activeEventForEditing.eventNumber);
+                this._eventDate.setValue(this._activeEventForEditing.eventDateTime);
+                this._eventEndDate.setValue(this._activeEventForEditing.eventDateTime);
+                this._autoClose.setValue(this._activeEventForEditing.autoClose);
+                this._tournament.setValue(this._activeEventForEditing.tournamentID);
+
+
+              }
+    });
+    this._theOracle.eventOracle.isToolBarEnabled$.subscribe(flag => {
+      this.isEditingEnabled = flag;
+    });
+
   }
 
 /**
