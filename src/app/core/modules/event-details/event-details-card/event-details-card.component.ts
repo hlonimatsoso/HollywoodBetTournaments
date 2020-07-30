@@ -14,7 +14,7 @@ import { Animations } from 'src/app/core/shared/models/Animations';
   templateUrl: './event-details-card.component.html',
   styleUrls: ['./event-details-card.component.scss'],
   animations:[
-    Animations.InOutAnimation(null)
+    Animations.fadeAnimation(null)
    ]
 })
 export class EventDetailsCardComponent implements OnInit {
@@ -25,13 +25,17 @@ export class EventDetailsCardComponent implements OnInit {
 
   event:RaceEvent;
   status:EventDetailStatus;
+  canDelete:boolean;
 
   get isMarkedForDeletion(){
     const index = this._theOracle.eventDetailsOracle.eventDetailsToDelete.findIndex(t => t.eventDetailID == this.eventDetail.eventID);
 
     return index > -1;
   }
-  constructor(private _theOracle:TheOracleService) { }
+  constructor(private _theOracle:TheOracleService) {
+    this.canDelete = this._theOracle.authService.canDelete("horses");
+
+   }
 
   ngOnInit(): void {
     this.event = this._theOracle.eventOracle.getEventByID(this.eventDetail.eventID)
@@ -57,6 +61,10 @@ export class EventDetailsCardComponent implements OnInit {
     this._theOracle.eventDetailsOracle.addToEventDEtailsDeleteList(this.eventDetail);
   }
 
-  
+  get getYingYangState(){
+
+    return this.isEditingEnabled ? "on":"off";
+
+  }
 
 }

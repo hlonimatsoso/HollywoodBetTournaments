@@ -5,7 +5,7 @@
     <mat-card-actions color="primary">
         <button mat-button color="primary">View</button>
         <button mat-button color="accent" (click)="onEdit($event)" [@YingYang]="getYingYangState">Edit</button>
-        <button  mat-button color="accent" (click)="onDelete($event)" [@YingYang]="getYingYangState" [disabled]="isMarkedForDeletion">Delete</button>
+        <button  mat-button color="accent" (click)="onDelete($event)" [@YingYang]="getYingYangState" [disabled]="isMarkedForDeletion || !canDelete">Delete</button>
     </mat-card-actions>
     <mat-card-footer>footers... so long friend....</mat-card-footer><!-- -->
 </mat-card>

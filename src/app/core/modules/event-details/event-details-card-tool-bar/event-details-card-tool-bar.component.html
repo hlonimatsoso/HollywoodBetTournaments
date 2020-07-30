@@ -1,6 +1,6 @@
 <div class="toolBar">
   <span class="margin_x_10"></span>
-    <mat-checkbox (change)="onEnableToolBarEditingOptionsChanged($event.checked)" [checked]="isEditingEnabled" ></mat-checkbox>
+    <mat-checkbox (change)="onEnableToolBarEditingOptionsChanged($event.checked)" [checked]="isEditingEnabled" [disabled]="!canWrite"></mat-checkbox>
     <span class="margin_x_10">Enabler Editing</span>
     <div class="toolBarButtons" *ngIf="isEditingEnabled">
         <mat-button-toggle-group (change)="onActionChange($event)" [@inOutAnimation]>

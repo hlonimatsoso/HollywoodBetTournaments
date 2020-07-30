@@ -1,6 +1,6 @@
 <div class="toolBar">
     <span class="margin_x_10"></span>
-    <mat-checkbox (change)="onEnableToolBarEditingOptionsChanged($event.checked)"></mat-checkbox>
+    <mat-checkbox (change)="onEnableToolBarEditingOptionsChanged($event.checked)" [disabled]="!canWrite"></mat-checkbox>
     <span class="margin_x_10">Enabler Editing : </span>
 
     <div class="addEdit" [@inOutAnimation] *ngIf="isEditingEnabled && (action != 'Delete') else loading">
@@ -19,8 +19,9 @@
             <mat-hint>Enter name here</mat-hint>
             <mat-error *ngIf="_tournamentName.invalid">{{getErrorMessage()}}</mat-error>
         </mat-form-field>
-        <button mat-button [disabled]="_tournamentName.invalid" (click)="RunUpdate()">{{selectedBUttonText}}</button>
      </div>
+     <button mat-button [disabled]="_tournamentName.invalid || !canWrite" (click)="RunUpdate()">{{selectedBUttonText}}</button>
+
     </div>
     
     <ng-template #loading class="chips">
@@ -31,7 +32,7 @@
           </mat-chip>
       </mat-chip-list>
                  
-      <button mat-button color="warn" [disabled]="tournamentDeleteList && tournamentDeleteList.length == 0" (click)="deleteTournament()">{{selectedBUttonText}}</button>
+      <button mat-button color="warn" [disabled]="tournamentDeleteList && tournamentDeleteList.length == 0 || !canWrite" (click)="deleteTournament()">{{selectedBUttonText}}</button>
    
     </ng-template>
         

@@ -28,6 +28,7 @@ export class EventCardToolBarComponent implements OnInit {
   @Input() public isEditingEnabled:boolean;
 
   action:string;
+  canWrite:boolean;
 
   _activeEventForEditing:RaceEvent;
 
@@ -47,6 +48,8 @@ export class EventCardToolBarComponent implements OnInit {
 
   constructor(private _theOracle:TheOracleService) {
     this.eventDeleteList = [];
+    this.canWrite = this._theOracle.authService.canWrite("events");
+
    }
   ngOnInit(): void {
 

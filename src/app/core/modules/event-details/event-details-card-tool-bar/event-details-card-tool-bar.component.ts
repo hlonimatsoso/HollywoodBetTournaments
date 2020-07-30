@@ -33,6 +33,7 @@ export class EventDetailsCardToolBarComponent implements OnInit {
 
   
   action:string;
+  canWrite:boolean;
 
   _activeEventDetailForEditing:EventDetail;
 
@@ -67,7 +68,10 @@ export class EventDetailsCardToolBarComponent implements OnInit {
     return this._oracle.eventDetailsOracle.events;
   }
 
-  constructor(private _oracle:TheOracleService,private _config:ConfigService) { }
+  constructor(private _oracle:TheOracleService,private _config:ConfigService) { 
+    this.canWrite = this._oracle.authService.canWrite("horses");
+
+  }
 
   ngOnInit(): void {
     //this._eventDetailName = new FormControl('', [Validators.required]);

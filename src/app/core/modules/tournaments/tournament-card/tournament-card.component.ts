@@ -23,6 +23,7 @@ export class TournamentCardComponent implements OnInit{
   @Input() oracleDeleteList:Tournament[];
 
   events:RaceEvent[];
+  canDelete:boolean;
 
   constructor(private _oracle:TheOracleService) {
     this.oracleDeleteList = [];
@@ -30,7 +31,9 @@ export class TournamentCardComponent implements OnInit{
    }
   ngOnInit(): void {
       this._oracle.eventOracle.events$.subscribe(e =>{
-        this.events = e.filter(x => x.tournamentID == this.tournament.tournamentID);
+      this.events = e.filter(x => x.tournamentID == this.tournament.tournamentID);
+      this.canDelete = this._oracle.authService.canDelete("tournaments");
+
       });
   }
 

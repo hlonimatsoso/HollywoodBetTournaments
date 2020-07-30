@@ -4,6 +4,7 @@ import { EventOracleService } from '../../modules/events/event-oracle.service';
 import { EventDetailsOracleService } from '../../modules/event-details/event-details-oracle.service';
 import { Tournament } from '../models/Tournament';
 import { RaceEvent } from '../models/Event';
+import { AuthServiceService } from '../../auth/auth-service.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,8 @@ export class TheOracleService {
   
   constructor(public tournamentOracle:TournamentOracleService,
               public eventOracle:EventOracleService,
-              public eventDetailsOracle:EventDetailsOracleService) { 
+              public eventDetailsOracle:EventDetailsOracleService,
+              public authService: AuthServiceService) { 
 
     // this.configureTournaments(_tournamentOracle);
     // this.configureEvents(_eventOracle);

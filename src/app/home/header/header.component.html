@@ -16,7 +16,7 @@
     </div>
     <span class="spacer"></span>
     <div class="userName" *ngIf="isAuthenticated else notAuthenticated">
-        <div>Hello {{user?.profile?.name}}</div>
+        <div>Hello {{user?.profile?.name}} aka {{user?.profile?.nickName}}</div>
         <button mat-button (click)="logOut()">Sign Out</button>
     </div>
     <ng-template #notAuthenticated>

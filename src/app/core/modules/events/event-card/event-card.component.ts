@@ -4,13 +4,17 @@ import { Tournament } from 'src/app/core/shared/models/Tournament';
 import { EventDetail } from 'src/app/core/shared/models/EventDetail';
 import { TheOracleService } from 'src/app/core/shared/services/the-oracle.service';
 import { BehaviorSubject } from 'rxjs';
+import { Animations } from 'src/app/core/shared/models/Animations';
 
 
 
 @Component({
   selector: 'app-event-card',
   templateUrl: './event-card.component.html',
-  styleUrls: ['./event-card.component.scss']
+  styleUrls: ['./event-card.component.scss'],
+  animations:[
+    Animations.fadeAnimation(null)
+  ]
 })
 export class EventCardComponent implements OnInit {
 
@@ -21,6 +25,7 @@ export class EventCardComponent implements OnInit {
   horses:EventDetail[];
   horses$:BehaviorSubject<EventDetail[]> = new BehaviorSubject(null);
   horseCount$:BehaviorSubject<number> = new BehaviorSubject(0);
+  canDelete:boolean;
 
 
   tournament:Tournament;
@@ -34,6 +39,8 @@ export class EventCardComponent implements OnInit {
   }
   constructor(private _oracle:TheOracleService) {
     this.oracleDeleteList = [];
+    this.canDelete = this._oracle.authService.canDelete("events");
+debugger;
   }
 
   ngOnInit(): void {
@@ -67,6 +74,12 @@ export class EventCardComponent implements OnInit {
   onDelete(eventArgument){
     console.log(`EventCard.onDelete(): Javascript event argument : ${JSON.stringify(eventArgument)}`);
     this._oracle.eventOracle.addToEventDeleteList(this.event);
+  }
+
+  get getYingYangState(){
+
+    return this.isEditingEnabled ? "on":"off";
+
   }
 
 }

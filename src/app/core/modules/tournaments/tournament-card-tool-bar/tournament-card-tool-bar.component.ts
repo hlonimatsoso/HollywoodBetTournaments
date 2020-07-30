@@ -30,7 +30,9 @@ export class TournamentCardToolBarComponent implements OnInit {
   @Input() public isEditingEnabled:boolean;
 
   action:string;
-  
+  canWrite:boolean;
+
+
   _activeTournamentForEditing:Tournament;
   _tournamentName: FormControl;
 
@@ -38,6 +40,8 @@ export class TournamentCardToolBarComponent implements OnInit {
 
   constructor(private _oracle:TheOracleService,private _config:ConfigService) {
     this.tournamentDeleteList = [];
+    this.canWrite = this._oracle.authService.canWrite("tournaments");
+  
   }
 
   ngOnInit(): void {
@@ -168,6 +172,8 @@ export class TournamentCardToolBarComponent implements OnInit {
 
   deleteTournament(){
     this._oracle.tournamentOracle.pleaseDeleteTheseTournaments(this.tournamentDeleteList);
+    this._oracle.tournamentOracle.onCurrentActionChange(Constants.toolbar_button_add_action);
+
   }
 
   removeDeleteChip(t: Tournament): void {

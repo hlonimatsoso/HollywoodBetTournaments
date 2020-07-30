@@ -15,7 +15,8 @@ const routes: Routes = [
       {
         path:'',
         component:IndexComponent,
-        pathMatch:'full'
+        pathMatch:'full',
+        redirectTo:''
         
       }
     ]

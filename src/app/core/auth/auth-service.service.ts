@@ -73,6 +73,36 @@ public userAccess:UserAccess
     return result;
   }
 
+  canWrite(url:string):boolean{
+    let result:boolean;
+
+    if(url.includes(Constants.urls_tournaments)){
+      result = this.userAccess.tournaments_write
+    } else if(url.includes(Constants.urls_events)){
+      result = this.userAccess.events_write
+    }else if(url.includes(Constants.urls_horses)){
+      result = this.userAccess.horses_write
+    }else
+      result = false;
+
+    return result;
+  }
+
+  canDelete(url:string):boolean{
+    let result:boolean;
+
+    if(url.includes(Constants.urls_tournaments)){
+      result = this.userAccess.tournaments_delete
+    } else if(url.includes(Constants.urls_events)){
+      result = this.userAccess.events_delete
+    }else if(url.includes(Constants.urls_horses)){
+      result = this.userAccess.horses_delete
+    }else
+      result = false;
+
+    return result;
+  }
+
   login() { 
     
     this._messageBus.httpRequest_InProgess_BroadcastUpdate(true);
@@ -99,7 +129,7 @@ public userAccess:UserAccess
     console.log(`Auth Service: completeAuthentication started`);
       this._user = await this._manager.signinRedirectCallback();
       console.log(`Auth Service: completeAuthentication signed in user ${JSON.stringify(this._user)}`);
-      debugger;
+  
       this.setUserAccess();
       this._isAuthenticated.next(this.isAuthenticated()); 
       this._authenticatedUser.next(this._user);     
@@ -110,7 +140,7 @@ public userAccess:UserAccess
         .subscribe(result => {
           console.log(`AUth-Service.completeAuthentication().setUserAccess()\n User Access: ${JSON.stringify(result)}`);
           this.userAccess = result;
-          debugger;
+     
     });
   }
 
