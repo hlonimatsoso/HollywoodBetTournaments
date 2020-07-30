@@ -22,20 +22,23 @@ export abstract class BaseHttpClient extends LoggingRules{
 
     _configService:ConfigService;
     
-    constructor(private _http:HttpClient, private _config:ConfigService, private _messageBus:MessageBusService){
+    constructor(public _http:HttpClient, public _config:ConfigService, public _messageBus:MessageBusService){
         super(_config.LoggingSettings)
         this._loggingRules = _config.LoggingSettings;
         this._configService = _config;
     }
 
-    getAll(url:string, typeRequested:string):Observable<any>{
+    getAll(url:string, typeRequested:string, headers?:any):Observable<any>{
+
+      if(headers)
+        this._httpOptions = headers;
 
         this._messageBus.httpRequest_InProgess_BroadcastUpdate(true);
 
         if(this._loggingRules.BaseHttpClient_Get_Can_Log)
             console.log(`BaseHttpClient.getAll(${this._config.eventsUrl}) : Sending HTTP GET request...`);
 
-        return this._http.get<any>(url, this._httpOptions)
+            return this._http.get<any>(url, this._httpOptions)
                .pipe(
                 //map((x: any) => JSON.parse(x)) ,
                 tap(result => {
@@ -58,9 +61,12 @@ export abstract class BaseHttpClient extends LoggingRules{
                 );
     }
 
-    Post(url:string,data:any):Observable<any> {
+    Post(url:string, data:any, headers?:HttpHeaders):Observable<any> {
 
         this._messageBus.httpRequest_InProgess_BroadcastUpdate(true);
+
+        if(headers)
+          this._httpOptions = headers;
   
         if(this._loggingRules.BaseHttpClient_Post_Can_Log)
             console.log(`BaseHttpClient.Post(${url}) : Send HTTP POST with body -> ${JSON.stringify(data)}`);
@@ -78,12 +84,11 @@ export abstract class BaseHttpClient extends LoggingRules{
                 console.log(`BaseHttpClient.Post().finalize(): HTTP POST request complete.`);
             }),
             catchError( error =>{ 
-                this._messageBus.httpRequest_InProgess_BroadcastUpdate(false);
-                var msg:String;
-                msg = "*** \nHTTP client CAUGHT sleeping on the job ";
-                console.error(`BaseHttpClient.Post()._http.Post.catchError(): CAUGHT '${url}' with ${JSON.stringify(data)} ERROR -> ${msg}\n***`);
-                return of(`${msg}: ${error}`)
-              })
+              debugger;
+              var msg = `BaseHttpClient.Post().catchError() \nHTTP Post failed \n ${error}`;
+              console.error(`${msg}`);
+              return throwError(`${msg}`)
+            })
           );
     
 

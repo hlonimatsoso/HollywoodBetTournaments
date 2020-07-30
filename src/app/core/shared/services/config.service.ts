@@ -17,7 +17,7 @@ export class ConfigService {
         redirect_uri: 'http://localhost:12000/auth-callback',
         post_logout_redirect_uri: 'http://localhost:12000/',
         response_type:"id_token token",
-        scope:"openid profile email",
+        scope:"openid profile email role custom tournaments events horses",
         filterProtocolClaims: true,
         loadUserInfo: true,
         automaticSilentRenew: true,
@@ -47,6 +47,10 @@ export class ConfigService {
 
   get eventDetailStatusUrl(){
     return "https://localhost:11000/api/EventDetailStatus";
+  }
+
+  get claimsUrl(){
+    return "https://localhost:11000/api/auth/claims";
   }
  
   get LoggingSettings():LoggingSettings{

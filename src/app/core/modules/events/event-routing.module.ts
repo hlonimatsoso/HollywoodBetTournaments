@@ -2,12 +2,18 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import {HomeService} from '../../../home/home.service'
 import {EventCardListComponent} from '../../modules/events/event-card-list/event-card-list.component'
+import { AuthGuardService } from '../../auth/auth-guard.service';
 
 
 
 export const routes: Routes = [
   HomeService.childRoutes([
-    { path: 'events', component:EventCardListComponent, pathMatch: 'full'}
+    { 
+      path: 'events',
+      component: EventCardListComponent,
+      pathMatch: 'full',
+      canActivate: [AuthGuardService]
+    }
   ])
   
   // { path: 'items', loadChildren: () => import('./items/items.module').then(m => m.ItemsModule) },

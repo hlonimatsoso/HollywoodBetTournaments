@@ -1,17 +1,20 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 
 import { UserManager, UserManagerSettings, User } from 'oidc-client';
 import {ConfigService} from '../shared/services/config.service'
 import { BehaviorSubject } from 'rxjs'; 
 import { MessageBusService } from '../shared/services/message-bus.service';
+import { UserAccess } from '../shared/models/UserAccess';
+import { BaseHttpClient } from '../shared/services/baseHttpClient';
+import { Constants } from '../shared/models/constants';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthServiceService {
+export class AuthServiceService  extends BaseHttpClient{
 
 private _manager:UserManager;
 private _user:User
@@ -32,9 +35,14 @@ authenticatedUser$ = this._authenticatedUser.asObservable();
 // Observable stream of http error for any interested parties to subscribe to
 httpErrors$ = this._httpErrors.asObservable();
 
-  constructor(private _settings:ConfigService, private _http: HttpClient , private _messageBus:MessageBusService) { 
+private _headers:HttpHeaders;
+public userAccess:UserAccess
+
+  constructor(_settings:ConfigService, _http: HttpClient , _messageBus:MessageBusService) { 
+    super(_http,_settings,_messageBus);
     this._manager = new UserManager(_settings.getClientSettings)
     this.setUser();
+    this.userAccess = new UserAccess();
   }
 
   setUser(){
@@ -48,6 +56,21 @@ httpErrors$ = this._httpErrors.asObservable();
 
   isAuthenticated(): boolean {
     return this._user != null && !this._user.expired;
+  }
+
+  canView(url:string):boolean{
+    let result:boolean;
+
+    if(url.includes(Constants.urls_tournaments)){
+      result = this.userAccess.tournaments_read
+    } else if(url.includes(Constants.urls_events)){
+      result = this.userAccess.events_read
+    }else if(url.includes(Constants.urls_horses)){
+      result = this.userAccess.horses_read
+    }else
+      result = false;
+
+    return result;
   }
 
   login() { 
@@ -75,24 +98,47 @@ httpErrors$ = this._httpErrors.asObservable();
   async completeAuthentication() {
     console.log(`Auth Service: completeAuthentication started`);
       this._user = await this._manager.signinRedirectCallback();
-    console.log(`Auth Service: completeAuthentication signed in user ${JSON.stringify(this._user)}`);
-
+      console.log(`Auth Service: completeAuthentication signed in user ${JSON.stringify(this._user)}`);
+      debugger;
+      this.setUserAccess();
       this._isAuthenticated.next(this.isAuthenticated()); 
       this._authenticatedUser.next(this._user);     
   }  
 
+  private setUserAccess(){
+    this.getAll(this._config.claimsUrl,"User access",this.authHeaders)
+        .subscribe(result => {
+          console.log(`AUth-Service.completeAuthentication().setUserAccess()\n User Access: ${JSON.stringify(result)}`);
+          this.userAccess = result;
+          debugger;
+    });
+  }
+
   register(userRegistration: any) { 
 
-    return this._http.post(this._settings.authApiURI + '/account/register', userRegistration).pipe(catchError(this.handleError));
+    return this._http.post(this._config.authApiURI + '/account/register', userRegistration).pipe(catchError(this.handleError));
   }
 
 
   get authorizationHeaderValue(): string {
+
     return `${this._user.token_type} ${this._user.access_token}`;
   }
 
   get name(): string {
     return this._user != null ? this._user.profile.name : '';
+  }
+
+  get authHeaders(){
+
+  let headers = {
+    headers: new HttpHeaders({
+      'Content-Type':  'application/json',
+      'Authorization': this.authorizationHeaderValue
+    })
+  }
+
+    return headers;
   }
 
   async signout() {

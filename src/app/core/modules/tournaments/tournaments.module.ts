@@ -14,6 +14,7 @@ import { TournamentCardComponent } from './tournament-card/tournament-card.compo
 import { TournamentCardListComponent } from './tournament-card-list/tournament-card-list.component';
 import { TournamentCardToolBarComponent } from './tournament-card-tool-bar/tournament-card-tool-bar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AuthModule } from '../../auth/auth.module';
 //import { MaterialModule } from '../material/material.module';
 
 
@@ -28,7 +29,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     MaterialModule,
     FormsModule,
     ReactiveFormsModule,
-    BrowserAnimationsModule    
+    BrowserAnimationsModule,
+    AuthModule   
   ],providers:[
     TournamentService,
     TournamentOracleService,
