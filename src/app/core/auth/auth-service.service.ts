@@ -17,7 +17,7 @@ import { Constants } from '../shared/models/constants';
 export class AuthServiceService  extends BaseHttpClient{
 
 private _manager:UserManager;
-private user:User
+public user:User
 
  // Observable auth source
 private _isAuthenticated = new BehaviorSubject<boolean>(false);
