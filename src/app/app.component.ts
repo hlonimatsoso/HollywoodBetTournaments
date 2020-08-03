@@ -7,4 +7,5 @@ import { Component, OnInit,AfterViewChecked } from '@angular/core';
 })
 export class AppComponent {
   title = 'HollywoodBetTournaments';
+
 }

@@ -40,7 +40,7 @@ export class EventCardComponent implements OnInit {
   constructor(private _oracle:TheOracleService) {
     this.oracleDeleteList = [];
     this.canDelete = this._oracle.authService.canDelete("events");
-debugger;
+
   }
 
   ngOnInit(): void {

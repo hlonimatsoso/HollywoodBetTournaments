@@ -1,0 +1,28 @@
+<p>Profile</p>
+
+<ul>
+    <li>Name: {{auth.user.profile.preferred_username}}</li>
+    <li>Name: {{auth.user.profile.preferred_username}}</li>
+    <li>Nick name: {{auth.user.profile.nickName}}</li>
+    <li>Age: {{auth.user.profile.age}}</li>
+    <li>Role: {{auth.user.profile.role}}</li>
+    <li>Religion: {{auth.user.profile.religion}}</li>
+    <li>Kasi: {{auth.user.profile.kasi}}</li>
+    <li>Website: {{auth.user.profile.website}}</li>
+</ul>
+
+Access
+<ul>
+<li>Can View Tournaments : {{auth.userAccess.tournaments_read}}</li>
+<li>Can Add/Edit Tournaments : {{auth.userAccess.tournaments_write}}</li>
+<li>Can Delete Tournaments : {{auth.userAccess.tournaments_delete}}</li>
+<br/>
+<li>Can View Events : {{auth.userAccess.events_read}}</li>
+<li>Can Add/Edit Events : {{auth.userAccess.events_write}}</li>
+<li>Can Delete Events : {{auth.userAccess.events_delete}}</li>
+<br/>
+<li>Can View Horses : {{auth.userAccess.horses_read}}</li>
+<li>Can Add/Edit Horses : {{auth.userAccess.horses_write}}</li>
+<li>Can Delete Horses : {{auth.userAccess.horses_delete}}</li>
+
+</ul>

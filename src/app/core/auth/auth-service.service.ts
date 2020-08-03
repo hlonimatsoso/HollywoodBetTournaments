@@ -17,7 +17,7 @@ import { Constants } from '../shared/models/constants';
 export class AuthServiceService  extends BaseHttpClient{
 
 private _manager:UserManager;
-private _user:User
+private user:User
 
  // Observable auth source
 private _isAuthenticated = new BehaviorSubject<boolean>(false);
@@ -47,15 +47,15 @@ public userAccess:UserAccess
 
   setUser(){
     this._manager.getUser().then(user => {
-      this._user = user;
+      this.user = user;
       this._isAuthenticated.next(this.isAuthenticated());
-      this._authenticatedUser.next(this._user);     
+      this._authenticatedUser.next(this.user);     
 
     });
   }
 
   isAuthenticated(): boolean {
-    return this._user != null && !this._user.expired;
+    return this.user != null && !this.user.expired;
   }
 
   canView(url:string):boolean{
@@ -127,12 +127,12 @@ public userAccess:UserAccess
 
   async completeAuthentication() {
     console.log(`Auth Service: completeAuthentication started`);
-      this._user = await this._manager.signinRedirectCallback();
-      console.log(`Auth Service: completeAuthentication signed in user ${JSON.stringify(this._user)}`);
+      this.user = await this._manager.signinRedirectCallback();
+      console.log(`Auth Service: completeAuthentication signed in user ${JSON.stringify(this.user)}`);
   
       this.setUserAccess();
       this._isAuthenticated.next(this.isAuthenticated()); 
-      this._authenticatedUser.next(this._user);     
+      this._authenticatedUser.next(this.user);     
   }  
 
   private setUserAccess(){
@@ -152,11 +152,11 @@ public userAccess:UserAccess
 
   get authorizationHeaderValue(): string {
 
-    return `${this._user.token_type} ${this._user.access_token}`;
+    return `${this.user.token_type} ${this.user.access_token}`;
   }
 
   get name(): string {
-    return this._user != null ? this._user.profile.name : '';
+    return this.user != null ? this.user.profile.name : '';
   }
 
   get authHeaders(){

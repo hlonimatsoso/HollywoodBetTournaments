@@ -17,15 +17,19 @@
     <span class="spacer"></span>
     <div class="userName" *ngIf="isAuthenticated else notAuthenticated">
         <div>Hello {{user?.profile?.name}} aka {{user?.profile?.nickName}}</div>
-        <button mat-button (click)="logOut()">Sign Out</button>
+        
+        <button mat-button [matMenuTriggerFor]="menu">Menu</button>
+        <mat-menu #menu="matMenu">
+        <button mat-menu-item routerLink="/profile">Profile</button>
+        <button mat-menu-item (click)="logOut()">Sign Out</button>
+        </mat-menu>
     </div>
     <ng-template #notAuthenticated>
         <button mat-button (click)="logIn()">Log In</button>
         <button mat-button  routerLink="/register">Register</button>
     </ng-template>
    
-    
-    <!-- <mat-icon class="icon">favorite</mat-icon> -->
+        <!-- <mat-icon class="icon">favorite</mat-icon> -->
 </mat-toolbar>
 
 
